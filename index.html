@@ -77,6 +77,38 @@
             color: #e63946;
             /* لون أحمر هادئ للخصم */
         }
+
+        /* حالة المنتج عندما تنفد الكمية */
+        .product-card.out-of-stock {
+            opacity: 0.7;
+            position: relative;
+            pointer-events: none;
+            /* يمنع الضغط على الكرت */
+        }
+
+        .product-card.out-of-stock img {
+            filter: grayscale(100%);
+            /* تحويل الصورة للأبيض والأسود */
+        }
+
+        /* ملصق نفذت الكمية */
+        .out-of-stock-badge {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-15deg);
+            background-color: rgba(220, 38, 38, 0.9);
+            /* أحمر */
+            color: white;
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            z-index: 20;
+            border: 2px solid white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            white-space: nowrap;
+        }
     </style>
 </head>
 
@@ -90,17 +122,17 @@
                 <div class="flex items-center gap-3">
                     <img src="https://i.ibb.co/F4gw7BnV/logo.png" alt="Logo" class="h-12 w-auto md:h-16">
                     <div>
-                <h1 class="text-2xl font-bold text-secondary-color" style="color: var(--secondary-color)">سلة العراق </h1>
-                <p class="text-sm text-gray-500">لتجارة وتوزيع المنتجات الغذائية والاستهلاكية</p>
-            </div>
+                        <h1 class="text-2xl font-bold text-secondary-color" style="color: var(--secondary-color)">سلة
+                            العراق </h1>
+                        <p class="text-sm text-gray-500">لتجارة وتوزيع المنتجات الغذائية والاستهلاكية</p>
+                    </div>
                 </div>
 
             </div>
 
             <div class="md:absolute md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 w-full md:w-96">
                 <div class="relative group">
-                    <span
-                        class="absolute inset-y-0 right-4 flex items-center text-gray-400 transition-colors">
+                    <span class="absolute inset-y-0 right-4 flex items-center text-gray-400 transition-colors">
                         <span class="material-icons-outlined">search</span>
                     </span>
                     <input type="text" id="searchInput" onkeyup="filterProducts()" placeholder="ابحث عن منتج..."
@@ -176,12 +208,24 @@
                 download: true,
                 header: true,
                 complete: function (results) {
-                    // تصفية السطور الفارغة من ملف جوجل
-                    allProducts = results.data.filter(row => row['اسم المنتج'] && row['اسم المنتج'].trim() !== "");
+                    // 1. تصفية السطور الفارغة
+                    let rawData = results.data.filter(row => row['اسم المنتج'] && row['اسم المنتج'].trim() !== "");
+
+                    // 2. منطق الترتيب: المتوفر أولاً، "نفذت الكمية" أخيراً
+                    rawData.sort((a, b) => {
+                        const statusA = (a['الحالة'] || "").trim();
+                        const statusB = (b['الحالة'] || "").trim();
+
+                        if (statusA === 'نفذت الكمية' && statusB !== 'نفذت الكمية') return 1;
+                        if (statusA !== 'نفذت الكمية' && statusB === 'نفذت الكمية') return -1;
+                        return 0;
+                    });
+
+                    allProducts = rawData;
                     filteredProducts = [...allProducts];
 
-                    createCategoryButtons(); // توليد أزرار الأقسام
-                    renderPage(1);           // عرض الصفحة الأولى
+                    createCategoryButtons();
+                    renderPage(1);
                 },
                 error: function (err) {
                     console.error("خطأ في تحميل البيانات:", err);
@@ -217,22 +261,34 @@
         function filterProducts() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
 
-            filteredProducts = allProducts.filter(product => {
+            // 1. الفلترة حسب القسم والبحث
+            let tempProducts = allProducts.filter(product => {
                 const name = (product['اسم المنتج'] || "").toLowerCase();
                 const category = (product['الفئة'] || "").toLowerCase();
 
-                // شرط القسم
                 const matchesCategory = (currentCategory === "الكل" || product['الفئة'] === currentCategory);
-                // شرط البحث
                 const matchesSearch = name.includes(searchTerm) || category.includes(searchTerm);
 
                 return matchesCategory && matchesSearch;
             });
 
-            currentPage = 1; // العودة للصفحة الأولى دائماً عند البحث أو التغيير
+            // 2. الفرز (Sorting): جعل المتوفر في الأعلى
+            tempProducts.sort((a, b) => {
+                const statusA = (a['الحالة'] || "").trim();
+                const statusB = (b['الحالة'] || "").trim();
+
+                // إذا كان المنتج A نفذت كميته والمنتج B متوفر، انقل A للأسفل
+                if (statusA === 'نفذت الكمية' && statusB !== 'نفذت الكمية') return 1;
+                // إذا كان المنتج A متوفر والمنتج B نفذت كميته، انقل A للأعلى
+                if (statusA !== 'نفذت الكمية' && statusB === 'نفذت الكمية') return -1;
+
+                return 0; // لا تغيير إذا كانا متساويين في الحالة
+            });
+
+            filteredProducts = tempProducts;
+            currentPage = 1;
             renderPage(1);
         }
-
         function renderPage(page) {
             currentPage = page;
             const grid = document.getElementById('productsGrid');
@@ -252,13 +308,19 @@
                 const discPrice = formatPrice(product['السعر بعد العرض']);
                 const hasDisc = discPrice && discPrice !== price;
 
+                // التحقق مما إذا كان المنتج نافذ الكمية (يقرأ من عمود "الحالة" في الشيت)
+                const isOutOfStock = product['الحالة'] === 'نفذت الكمية' || product['الحالة'] === 'No';
+
                 return `
-        <div class="product-card bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden flex flex-col hover:shadow-lg transition-all duration-300">
+        <div class="product-card bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden flex flex-col hover:shadow-lg transition-all duration-300 ${isOutOfStock ? 'out-of-stock' : ''}">
             <div class="relative w-full h-64 overflow-hidden bg-slate-50">
                 <img src="${fixImageUrl(product['الصورة'])}" 
                      style="width:100%; height:100%; object-fit:cover;"
                      onerror="this.src='https://via.placeholder.com/400x400?text=No+Image'">
-                ${hasDisc ? `<div class="absolute top-3 right-3 bg-red-600 text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-md">عرض خاص</div>` : ''}
+                
+                ${isOutOfStock ? `<div class="out-of-stock-badge">نفذت الكمية</div>` : ''}
+                
+                ${(hasDisc && !isOutOfStock) ? `<div class="absolute top-3 right-3 bg-red-600 text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-md">عرض خاص</div>` : ''}
             </div>
             <div class="p-5 flex-grow flex flex-col text-right">
                 <span class="text-yellow-400 text-[10px] font-bold mb-1 uppercase">${product['الفئة'] || ''}</span>
@@ -271,9 +333,10 @@
                         <div class="text-xl font-black text-slate-900">${price} <span class="text-xs font-normal">د.ع</span></div>
                     `}
                 </div>
+                ${isOutOfStock ? `<p class="text-red-600 text-xs font-bold mt-2">غير متوفر حالياً</p>` : ''}
             </div>
         </div>
-            `;
+        `;
             }).join('');
 
             updatePaginationControls();
@@ -347,6 +410,13 @@
             }
             return u;
         }
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('تم تفعيل وضع الأوفلاين بنجاح!'))
+                    .catch(err => console.log('فشل تفعيل وضع الأوفلاين', err));
+            });
+        }
     </script>
     <footer class="bg-[#4a4a4a] text-white pt-12 pb-6 mt-20">
         <div class="container mx-auto px-4">
@@ -356,9 +426,9 @@
                     <div class="flex items-center gap-4">
                         <img src="https://i.ibb.co/F4gw7BnV/logo.png" alt="سلة العراق" class="h-16 w-auto">
                         <div>
-                <h1 class="text-2xl font-bold text-secondary-color">سلة العراق</h1>
-                
-            </div>
+                            <h1 class="text-2xl font-bold text-secondary-color">
+                                سلة العراق</h1>
+                        </div>
                     </div>
 
                     <p class="text-gray-300 text-sm leading-relaxed mt-4">
@@ -403,7 +473,4 @@
     </footer>
 </body>
 
-
 </html>
-
-
