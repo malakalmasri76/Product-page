@@ -238,7 +238,7 @@ function renderPage(page) {
                                     <span class="text-slate-700">${product["العرض"]}</span>
                                 </div>
                                 <div class="flex justify-between">
-                                    <span class="text-slate-700">سعر العرض:</span>
+                                    <span class="text-slate-700">السعر بعد العرض:</span>
                                     <span class="text-slate-700">${globalFormatPrice(product["السعر بعد العرض"])}</span>
                                 </div>
                             ` : `
@@ -266,6 +266,9 @@ function renderPage(page) {
                     <h3 class="text-[11px] font-bold mb-2 uppercase tracking-[0.2em] text-yellow-500/80">سعر الجملة</h3>
                     <div class="bg-white/10 w-full py-3 rounded-2xl border border-white/20 mb-4">
                         <span class="text-2xl font-black text-white">${globalFormatPrice(product["سعر الجملة"])}</span>
+                    </div>
+                    <div class="bg-white/10 w-full py-3 rounded-2xl border border-white/20 mb-4">
+                        <span class="text-2xl font-black text-white">${product["عدد الجملة"]}</span>
                     </div>
                 </div>
 
@@ -419,7 +422,7 @@ function openProductModal(index) {
                     </div>
                     ${hasOffer ? `
                         <div class="flex justify-between items-center mt-2 pt-2 border-t border-slate-200">
-                            <span class="text-slate-800 font-bold text-sm">سعر العرض</span>
+                            <span class="text-slate-800 font-bold text-sm">السعر بعد العرض</span>
                             <span class="text-slate-800 text-xl">${globalFormatPrice(product["السعر بعد العرض"])}</span>
                         </div>
                     ` : ''}
@@ -468,6 +471,7 @@ function closeProductModal() {
     content.classList.add('scale-95', 'opacity-0');
     setTimeout(() => modal.classList.add('hidden'), 300);
 }
+
 
 
 
