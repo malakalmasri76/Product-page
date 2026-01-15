@@ -114,6 +114,7 @@ function addToCart(name, price) {
         cart.push({ name, price: numericPrice, qty: 1 });
     }
     updateCart();
+  renderPage(currentPage, false);
     
 }
 
@@ -159,7 +160,7 @@ function changeQty(index, delta) {
   cart[index].qty += delta;
   if (cart[index].qty <= 0) cart.splice(index, 1);
   updateCart();
-  renderPage(currentPage);
+  renderPage(currentPage, false);
 }
 
 function changeQtyByName(name, delta) {
@@ -169,14 +170,16 @@ function changeQtyByName(name, delta) {
     if (cart[index].qty <= 0) cart.splice(index, 1);
   }
   updateCart();
-  renderPage(currentPage);
+  renderPage(currentPage, false);
 }
 
 // 5. عرض المنتجات (UI) مع خاصية الـ Flip
 function renderPage(page) {
     currentPage = page;
     // العودة لأعلى الصفحة عند التغيير
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (shouldScroll) {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
     
     const grid = document.getElementById("productsGrid");
     if (!grid) return;
@@ -351,32 +354,41 @@ function toggleCart() {
 function updatePaginationControls() {
   const container = document.getElementById("paginationButtons");
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+  
   if (!container || totalPages <= 1) {
     if (container) container.innerHTML = "";
     return;
   }
+
+  // زر الصفحة السابقة
   let html = `<button onclick="changePage(${currentPage - 1})" ${
     currentPage === 1 ? "disabled" : ""
   } class="p-2 rounded-xl border bg-white disabled:opacity-30">
         <span class="material-icons-outlined">chevron_right</span>
     </button>`;
+
+  // أرقام الصفحات
   for (let i = 1; i <= totalPages; i++) {
-    html += `<button onclick="renderPage(${i})" class="w-10 h-10 rounded-xl font-bold ${
+    // نتركها كما هي (i) لأننا نريد التمرير للأعلى عند الانتقال لصفحة جديدة
+    html += `<button onclick="renderPage(${i}, true)" class="w-10 h-10 rounded-xl font-bold ${
       i === currentPage ? "bg-yellow-400 text-white" : "bg-white text-slate-400"
     }">${i}</button>`;
   }
+
+  // زر الصفحة التالية
   html += `<button onclick="changePage(${currentPage + 1})" ${
     currentPage === totalPages ? "disabled" : ""
   } class="p-2 rounded-xl border bg-white disabled:opacity-30">
         <span class="material-icons-outlined">chevron_left</span>
     </button>`;
+
   container.innerHTML = html;
 }
 
 function changePage(newPage) {
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
   if (newPage >= 1 && newPage <= totalPages) {
-    renderPage(newPage);
+    renderPage(newPage, true);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 }
@@ -484,6 +496,7 @@ function closeProductModal() {
     content.classList.add('scale-95', 'opacity-0');
     setTimeout(() => modal.classList.add('hidden'), 300);
 }
+
 
 
 
