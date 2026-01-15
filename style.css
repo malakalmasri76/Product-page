@@ -15,7 +15,7 @@ body {
 /* 2. حاوية الكارد (خاصية الـ Flip) */
 .product-card-container {
     perspective: 1000px;
-    height: 460px; /* طول ثابت لضمان تناسق الشبكة */
+    height: 360px; /* طول ثابت لضمان تناسق الشبكة */
     margin-bottom: 1rem;
     user-select: none; /* منع تحديد النص عند النقر المزدوج */
 }
@@ -48,6 +48,19 @@ body {
 .card-front {
     background: white;
     border: 1px solid #f1f5f9;
+}
+/* تنسيق سطر العنوان والزر */
+.card-front h3 {
+    display: -webkit-box;
+    
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.2;
+}
+
+/* تحسين شكل العداد الصغير عندما يظهر مكان الزر */
+.card-front .flex.items-center.gap-1 {
+    min-width: 65px; /* ضمان عرض كافٍ للعداد */
 }
 
 /* الوجه الخلفي */
@@ -135,4 +148,21 @@ button:active {
 header {
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
+}
+header .flex-col {
+    /* التأكد من أن النصوص تبدأ من جهة اليمين تماماً */
+    align-items: flex-end; 
+}
+
+/* تحسين شكل الخط للجملة الوصفية */
+header p {
+    letter-spacing: -0.2px;
+    word-spacing: 1px;
+}
+
+/* في الشاشات الصغيرة جداً، نصغر الجملة أكثر */
+@media (max-width: 400px) {
+    header p {
+        font-size: 8px;
+    }
 }
