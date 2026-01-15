@@ -214,14 +214,14 @@ function renderPage(page) {
                             <div onclick="event.stopPropagation()">
                                 ${quantityInCart === 0 ? `
                                     <button onclick="addToCart('${product["اسم المنتج"]}', '${rawPrice}')" 
-                                        class="w-9 h-9 bg-yellow-400 text-white rounded-xl flex items-center justify-center transition-all active:scale-90 ${isOutOfStock ? 'opacity-30 pointer-events-none' : ''}">
+                                        class="w-10 h-10 bg-yellow-400 text-white rounded-xl flex items-center justify-center transition-all active:scale-90 ${isOutOfStock ? 'opacity-30 pointer-events-none' : ''}">
                                         <span class="material-icons-outlined text-[20px]">add_shopping_cart</span>
                                     </button>
                                 ` : `
-                                    <div class="flex items-center gap-1 bg-yellow-200 rounded-xl p-1 border border-gray-200">
-                                        <button onclick="changeQtyByName('${product["اسم المنتج"]}', 1)" class="w-6 h-6 bg-gray-100 rounded-lg flex items-center justify-center text-[12px] font-bold shadow-sm">+</button>
+                                    <div class="w-30 h-10 flex items-center gap-1 bg-yellow-200 rounded-xl p-1 border border-gray-200">
+                                        <button onclick="changeQtyByName('${product["اسم المنتج"]}', 1)" class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center text-[12px] font-bold shadow-sm">+</button>
                                         <span class="text-[12px] font-black px-1">${quantityInCart}</span>
-                                        <button onclick="changeQtyByName('${product["اسم المنتج"]}', -1)" class="w-6 h-6 bg-gray-100 rounded-lg flex items-center justify-center text-[12px] font-bold shadow-sm">-</button>
+                                        <button onclick="changeQtyByName('${product["اسم المنتج"]}', -1)" class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center text-[12px] font-bold shadow-sm">-</button>
                                     </div>
                                 `}
                             </div>
@@ -238,7 +238,7 @@ function renderPage(page) {
                                     <span class="text-slate-700">${product["العرض"]}</span>
                                 </div>
                                 <div class="flex justify-between">
-                                    <span class="text-slate-700">السعر بعد العرض:</span>
+                                    <span class="text-slate-700">بعد العرض:</span>
                                     <span class="text-slate-700">${globalFormatPrice(product["السعر بعد العرض"])}</span>
                                 </div>
                             ` : `
@@ -423,7 +423,7 @@ function openProductModal(index) {
                     </div>
                     ${hasOffer ? `
                         <div class="flex justify-between items-center mt-2 pt-2 border-t border-slate-200">
-                            <span class="text-slate-800 font-bold text-sm">السعر بعد العرض</span>
+                            <span class="text-slate-800 font-bold text-sm"> بعد العرض</span>
                             <span class="text-slate-800 text-xl">${globalFormatPrice(product["السعر بعد العرض"])}</span>
                         </div>
                     ` : ''}
@@ -472,6 +472,7 @@ function closeProductModal() {
     content.classList.add('scale-95', 'opacity-0');
     setTimeout(() => modal.classList.add('hidden'), 300);
 }
+
 
 
 
