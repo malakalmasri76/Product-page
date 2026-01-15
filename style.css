@@ -1,0 +1,138 @@
+/* 1. المتغيرات والخطوط */
+:root {
+    --primary-color: #f7c300;
+    --secondary-color: #4a4a4a;
+    --bg-light: #f8fafc;
+}
+
+body {
+    font-family: 'Cairo', sans-serif;
+    background-color: var(--bg-light);
+    color: var(--secondary-color);
+    scroll-behavior: smooth;
+}
+
+/* 2. حاوية الكارد (خاصية الـ Flip) */
+.product-card-container {
+    perspective: 1000px;
+    height: 460px; /* طول ثابت لضمان تناسق الشبكة */
+    margin-bottom: 1rem;
+    user-select: none; /* منع تحديد النص عند النقر المزدوج */
+}
+
+.product-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-style: preserve-3d;
+    cursor: pointer;
+}
+
+.product-card-inner.is-flipped {
+    transform: rotateY(180deg);
+}
+
+.card-front, .card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    border-radius: 1.5rem;
+    overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05);
+}
+
+/* الوجه الأمامي */
+.card-front {
+    background: white;
+    border: 1px solid #f1f5f9;
+}
+
+/* الوجه الخلفي */
+.card-back {
+    background: #111827; /* لون ليلي فخم */
+    color: white;
+    transform: rotateY(180deg);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    text-align: center;
+}
+
+/* 3. حالة نفاد الكمية */
+.out-of-stock-badge {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-15deg);
+    background-color: rgba(220, 38, 38, 0.95);
+    color: white;
+    padding: 6px 15px;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 0.9rem;
+    z-index: 10;
+    border: 2px solid white;
+    pointer-events: none;
+}
+
+.opacity-50 img {
+    filter: grayscale(100%);
+}
+
+/* 4. السلة الجانبية (Drawer) */
+#cartDrawer {
+    transition: all 0.3s ease-in-out;
+}
+
+#cartItems::-webkit-scrollbar {
+    width: 4px;
+}
+
+#cartItems::-webkit-scrollbar-thumb {
+    background: #e2e8f0;
+    border-radius: 10px;
+}
+
+/* 5. المودال (نافذة التأكيد) */
+#confirmModal {
+    transition: visibility 0.3s;
+}
+
+@keyframes pulseIcon {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.bg-red-50 span {
+    animation: pulseIcon 2s infinite;
+}
+
+/* 6. تأثيرات الأزرار والحركة */
+button {
+    transition: all 0.2s ease;
+}
+
+button:active {
+    transform: scale(0.95);
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+#cartItems > div {
+    animation: slideUp 0.3s ease forwards;
+}
+
+/* 7. الهيدر (تأثير الزجاج) */
+header {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
