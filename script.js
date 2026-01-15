@@ -258,7 +258,7 @@ function renderPage(page) {
                     </button>
 
                     <span class="material-icons-outlined text-yellow-400 text-4xl mb-3">stars</span>
-                    <h3 class="text-[11px] font-bold mb-2 uppercase tracking-[0.2em] text-yellow-500/80">سعر جملة الجملة</h3>
+                    <h3 class="text-[11px] font-bold mb-2 uppercase tracking-[0.2em] text-yellow-500/80">سعر الجملة</h3>
                     <div class="bg-white/10 w-full py-3 rounded-2xl border border-white/20 mb-4">
                         <span class="text-2xl font-black text-white">${globalFormatPrice(product["سعر الجملة"])}</span>
                     </div>
@@ -463,3 +463,4 @@ function closeProductModal() {
     content.classList.add('scale-95', 'opacity-0');
     setTimeout(() => modal.classList.add('hidden'), 300);
 }
+
