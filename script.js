@@ -1,6 +1,7 @@
 // 1. الإعدادات والمتغيرات العالمية
 const SHEET_URL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vQLyL8folfxpC5EsPlkv2vWBNROY064cbM3tbJ0bArIfJTWe3Fi1KB0SLMLiE8PLto32lGrT6Gzcr56/pub?output=csv";
+
 let allProducts = [];
 let filteredProducts = [];
 let currentPage = 1;
@@ -163,97 +164,103 @@ function changeQtyByName(name, delta) {
 // 5. عرض المنتجات (UI) مع خاصية الـ Flip
 function renderPage(page) {
     currentPage = page;
+    // العودة لأعلى الصفحة عند التغيير
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    
     const grid = document.getElementById("productsGrid");
     if (!grid) return;
     
     const start = (page - 1) * itemsPerPage;
     const products = filteredProducts.slice(start, start + itemsPerPage);
 
-    grid.innerHTML = products.map((product) => {
+    grid.innerHTML = products.map((product, index) => {
         const isOutOfStock = product["الحالة"] === "نفذت الكمية";
         
-        // التحقق من وجود عرض (إذا كان حقل العرض فارغاً أو يحتوي على 0)
+        // التحقق من وجود عرض
         const hasOffer = product["العرض"] && product["العرض"].toString().trim() !== "" && product["العرض"] !== "0";
         
-        // اختيار السعر الذي سيتم إضافته للسلة (سعر العرض إذا وجد، وإلا السعر العادي)
+        // تجهيز السعر الخام للإضافة للسلة
         const rawPrice = (hasOffer && product["السعر بعد العرض"]) ? 
                          product["السعر بعد العرض"].toString().replace(/[^\d]/g, '') : 
-                         product["السعر"].toString().replace(/[^\d]/g, '');
+                         product["السعر"]?.toString().replace(/[^\d]/g, '') || "0";
 
         const cartItem = cart.find((item) => item.name === product["اسم المنتج"]);
         const quantityInCart = cartItem ? cartItem.qty : 0;
 
+        // حساب الفهرس الحقيقي للمنتج لاستخدامه في الـ Modal
+        const productIndex = start + index;
+
         return `
         <div class="product-card-container">
-            <div class="product-card-inner" ondblclick="this.classList.toggle('is-flipped')">
+            <div class="product-card-inner" id="card-${productIndex}">
                 
-                <div class="card-front bg-white border border-slate-100 shadow-sm">
-                    <div class="relative h-40 bg-white p-2 border-b border-gray-50">
-                        <img src="${fixImageUrl(product["الصورة"])}" class="w-full h-full object-contain">
+                <div class="card-front bg-white border border-slate-100 shadow-sm rounded-3xl overflow-hidden flex flex-col">
+                    
+                    <button onclick="event.stopPropagation(); document.getElementById('card-${productIndex}').classList.toggle('is-flipped')" 
+                        class="absolute top-2 left-2 z-20 w-8 h-8 flex items-center justify-center shadow-sm">
+                        <span class="material-icons-outlined text-[18px] text-slate-600 hidden">autorenew</span>
+                    </button>
+
+                    <div class="image-container relative w-full h-64 cursor-pointer" onclick="openProductModal(${productIndex})">
+                        <img src="${fixImageUrl(product["الصورة"])}" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
                         ${isOutOfStock ? `<div class="out-of-stock-badge">نفذت الكمية</div>` : ""}
                     </div>
 
-                    <div class="p-3 text-right">
-                        <div class="flex items-start justify-between gap-2 mb-2 min-h-[40px]">
-                            <h3 class="font-bold text-slate-800 text-[15px] leading-tight flex-grow">${product["اسم المنتج"]}</h3>
+                    <div class="p-4 text-right flex-grow flex flex-col">
+                        <div class="flex items-start justify-between gap-2 mb-3 min-h-[40px]">
+                            <h3 class="font-bold text-slate-800 text-[14px] leading-tight flex-grow cursor-pointer" onclick="openProductModal(${productIndex})">
+                                ${product["اسم المنتج"]}
+                            </h3>
                             <div onclick="event.stopPropagation()">
                                 ${quantityInCart === 0 ? `
                                     <button onclick="addToCart('${product["اسم المنتج"]}', '${rawPrice}')" 
-                                        class="w-8 h-8 bg-yellow-400 text-white rounded-lg flex items-center justify-center transition-all ${isOutOfStock ? 'opacity-30 pointer-events-none' : ''}">
-                                        <span class="material-icons-outlined text-sm">add_shopping_cart</span>
+                                        class="w-9 h-9 bg-black text-white rounded-xl flex items-center justify-center hover:bg-zinc-800 transition-all active:scale-90 ${isOutOfStock ? 'opacity-30 pointer-events-none' : ''}">
+                                        <span class="material-icons-outlined text-[20px]">add_shopping_cart</span>
                                     </button>
                                 ` : `
-                                    <div class="flex items-center gap-1 bg-gray-100 rounded-lg p-0.5 border border-gray-200">
-                                        <button onclick="changeQtyByName('${product["اسم المنتج"]}', 1)" class="w-6 h-6 bg-white rounded flex items-center justify-center text-[10px] font-bold shadow-sm">+</button>
-                                        <span class="text-[10px] font-black px-1">${quantityInCart}</span>
-                                        <button onclick="changeQtyByName('${product["اسم المنتج"]}', -1)" class="w-6 h-6 bg-white rounded flex items-center justify-center text-[10px] font-bold shadow-sm">-</button>
+                                    <div class="flex items-center gap-1 bg-gray-100 rounded-xl p-1 border border-gray-200">
+                                        <button onclick="changeQtyByName('${product["اسم المنتج"]}', 1)" class="w-6 h-6 bg-white rounded-lg flex items-center justify-center text-[12px] font-bold shadow-sm">+</button>
+                                        <span class="text-[12px] font-black px-1">${quantityInCart}</span>
+                                        <button onclick="changeQtyByName('${product["اسم المنتج"]}', -1)" class="w-6 h-6 bg-white rounded-lg flex items-center justify-center text-[12px] font-bold shadow-sm">-</button>
                                     </div>
                                 `}
                             </div>
                         </div>
                         
-                        <div class="space-y-1 text-[13px]">
+                        <div class="mt-auto space-y-1 text-[13px]">
                             ${hasOffer ? `
                                 <div class="flex justify-between border-b border-gray-50 pb-0.5">
-                                    <span class="text-slate-500">السعر:</span>
-                                    <span class="text-slate-800">${globalFormatPrice(product["السعر"])}</span>
+                                    <span class="text-red-700 font-bold">السعر:</span>
+                                    <span class="text-red-700 font-bold">${globalFormatPrice(product["السعر"])}</span>
                                 </div>
                                 <div class="flex justify-between border-b border-gray-50 pb-0.5">
-                                    <span class="text-slate-500">العرض:</span>
-                                    <span class="font-bold text-blue-600">${product["العرض"]}</span>
+                                    <span class="text-slate-700">العرض:</span>
+                                    <span class="text-slate-700">${product["العرض"]}</span>
                                 </div>
-                                <div class="flex justify-between bg-red-50 p-1 rounded">
-                                    <span class="text-red-700 font-bold">سعر العرض:</span>
-                                    <span class="font-black text-red-700">${globalFormatPrice(product["السعر بعد العرض"])}</span>
+                                <div class="flex justify-between">
+                                    <span class="text-slate-700">سعر العرض:</span>
+                                    <span class="text-slate-700">${globalFormatPrice(product["السعر بعد العرض"])}</span>
                                 </div>
                             ` : `
                                 <div class="flex justify-between border-b border-gray-50 pb-0.5">
-                                    <span class="text-slate-500">السعر:</span>
-                                    <span class="font-black text-slate-800 text-[13px]">${globalFormatPrice(product["السعر"])}</span>
+                                    <span class="text-red-700 font-bold">السعر:</span>
+                                    <span class="text-red-700 font-bold">${globalFormatPrice(product["السعر"])}</span>
                                 </div>
                             `}
-                            
-                            ${product["العدد"] ? `
-                                <div class="flex justify-between pt-0.5 text-gray-500">
-                                    <span>العدد بالكرتون:</span>
-                                    <span>${product["العدد"]}</span>
-                                </div>` : ""
-                            }
-                            
-                            <div class="flex justify-between pt-0.5">
-                                <span class="text-slate-500">سعر الرف:</span>
-                                <span class="font-bold text-green-700">${globalFormatPrice(product["سعر الرف"])}</span>
-                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="card-back shadow-2xl">
-                    <span class="material-icons-outlined text-yellow-400 text-3xl mb-2">stars</span>
-                    <h3 class="text-xs font-bold mb-2 uppercase">سعرالجملة</h3>
-                    <div class="bg-white/10 w-full py-2 rounded-lg border border-white/20 mb-2">
-                        <span class="text-xl font-black text-yellow-400">${globalFormatPrice(product["سعر الجملة"])}</span>
+                <div class="card-back shadow-2xl rounded-3xl flex flex-col items-center justify-center p-6 bg-slate-900 text-white text-center">
+                    <button onclick="document.getElementById('card-${productIndex}').classList.toggle('is-flipped')" 
+                        class="absolute top-4 left-4 text-white/50 hover:text-white transition-colors">
+                        <span class="material-icons-outlined">close</span>
+                    </button>
+
+                    <span class="material-icons-outlined text-yellow-400 text-4xl mb-3">stars</span>
+                    <h3 class="text-[11px] font-bold mb-2 uppercase tracking-[0.2em] text-yellow-500/80">سعر جملة الجملة</h3>
+                    <div class="bg-white/10 w-full py-3 rounded-2xl border border-white/20 mb-4">
+                        <span class="text-2xl font-black text-white">${globalFormatPrice(product["سعر الجملة"])}</span>
                     </div>
                 </div>
 
@@ -367,4 +374,92 @@ if ("serviceWorker" in navigator) {
   navigator.serviceWorker
     .register("./sw.js")
     .then(() => console.log("Service Worker Registered"));
+}
+function openProductModal(index) {
+    const product = filteredProducts[index];
+    const modal = document.getElementById('productModal');
+    const content = document.getElementById('modalContent');
+    const body = document.getElementById('modalBody');
+
+    // تأكدي أن هذه المتغيرات معرفة
+    const hasOffer = product["العرض"] && product["العرض"] !== "0";
+    const cartItem = cart.find((item) => item.name === product["اسم المنتج"]);
+    const quantityInCart = cartItem ? cartItem.qty : 0;
+    const isOutOfStock = product["الحالة"] === "نفذت الكمية";
+    const rawPrice = (hasOffer && product["السعر بعد العرض"]) ? 
+                     product["السعر بعد العرض"].toString().replace(/[^\d]/g, '') : 
+                     product["السعر"]?.toString().replace(/[^\d]/g, '') || "0";
+
+    // إجبار شكل المودال أن يكون مربعاً عبر الـ Style المباشر
+    content.style.maxWidth = "450px"; 
+    content.style.width = "90%";
+    content.className = "bg-white rounded-[35px] overflow-hidden shadow-2xl transform transition-all duration-300";
+
+    body.innerHTML = `
+        <div class="flex flex-col">
+            <div class="relative w-full h-72 bg-gray-50 flex items-center justify-center border-b border-gray-100">
+                <img src="${fixImageUrl(product["الصورة"])}" class="w-full h-full object-contain p-4">
+                <button onclick="closeProductModal()" class="absolute top-4 right-4 bg-white/90 w-10 h-10 rounded-full flex items-center justify-center shadow-md">
+                    <span class="material-icons-outlined text-gray-600">close</span>
+                </button>
+            </div>
+
+            <div class="p-6 text-right">
+                <h2 class="text-xl font-black text-slate-800 mb-4">${product["اسم المنتج"]}</h2>
+
+                <div class="bg-slate-50 p-4 rounded-2xl mb-4 border border-slate-100">
+                    <div class="flex justify-between items-center">
+                        <span class="text-red-700 font-bold text-sm">السعر</span>
+                        <span class="text-red-700 text-lg">${globalFormatPrice(product["السعر"])}</span>
+                    </div>
+                    ${hasOffer ? `
+                        <div class="flex justify-between items-center mt-2 pt-2 border-t border-slate-200">
+                            <span class="text-slate-800 font-bold text-sm">سعر العرض</span>
+                            <span class="text-slate-800 text-xl">${globalFormatPrice(product["السعر بعد العرض"])}</span>
+                        </div>
+                    ` : ''}
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 mb-6">
+                    <div class="bg-blue-50/50 p-3 rounded-xl border border-blue-100 flex flex-col items-center">
+                        <span class="text-blue-600 text-[10px] font-bold">سعر الرف</span>
+                        <span class="text-blue-700 font-black">${globalFormatPrice(product["سعر الرف"])}</span>
+                    </div>
+                    <div class="bg-orange-50/50 p-3 rounded-xl border border-orange-100 flex flex-col items-center">
+                        <span class="text-orange-600 text-[10px] font-bold">العدد بالكرتون</span>
+                        <span class="text-orange-700 font-black">${product["العدد"] || "---"}</span>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-center">
+                    ${quantityInCart === 0 ? `
+                        <button onclick="addToCart('${product["اسم المنتج"]}', '${rawPrice}'); openProductModal(${index})" 
+                            class="w-full h-14 bg-black text-white rounded-2xl font-bold flex items-center justify-center gap-2 active:scale-95 transition-transform ${isOutOfStock ? 'opacity-30 pointer-events-none' : ''}">
+                            <span class="material-icons-outlined">add_shopping_cart</span>
+                            إضافة للسلة
+                        </button>
+                    ` : `
+                        <div class="flex items-center justify-between w-full bg-gray-100 p-2 rounded-2xl border border-gray-200 h-14">
+                            <button onclick="changeQtyByName('${product["اسم المنتج"]}', 1); openProductModal(${index})" class="w-10 h-10 bg-white rounded-xl shadow-sm font-bold text-xl">+</button>
+                            <span class="text-lg font-black">${quantityInCart}</span>
+                            <button onclick="changeQtyByName('${product["اسم المنتج"]}', -1); openProductModal(${index})" class="w-10 h-10 bg-white rounded-xl shadow-sm font-bold text-xl">-</button>
+                        </div>
+                    `}
+                </div>
+            </div>
+        </div>
+    `;
+
+    modal.classList.remove('hidden');
+    setTimeout(() => {
+        content.classList.remove('scale-95', 'opacity-0');
+        content.classList.add('scale-100', 'opacity-100');
+    }, 10);
+}
+
+function closeProductModal() {
+    const modal = document.getElementById('productModal');
+    const content = document.getElementById('modalContent');
+    content.classList.add('scale-95', 'opacity-0');
+    setTimeout(() => modal.classList.add('hidden'), 300);
 }
