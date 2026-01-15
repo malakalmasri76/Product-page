@@ -248,8 +248,8 @@ function renderPage(page) {
                                 </div>
                             `}
                             <div class="flex justify-between border-b border-gray-50 pb-0.5">
-                                    <span class="text-white text-[10px] font-bold">سعر الرف</span>
-                        <span class="text-white font-black">${globalFormatPrice(product["سعر الرف"])}</span>
+                                    <span class="text-slate-700 text-[10px] font-bold">سعر الرف</span>
+                        <span class="text-slate-700 font-black">${globalFormatPrice(product["سعر الرف"])}</span>
                                 </div>
                             
                         </div>
@@ -468,6 +468,7 @@ function closeProductModal() {
     content.classList.add('scale-95', 'opacity-0');
     setTimeout(() => modal.classList.add('hidden'), 300);
 }
+
 
 
 
