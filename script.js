@@ -14,12 +14,18 @@ window.onload = loadDataFromSheet;
 
 // دالة عالمية لتنظيف وتنسيق أي سعر
 function globalFormatPrice(value) {
-  if (!value || value === "0") return "0 د.ع";
-  // استخراج الأرقام فقط (حذف أي نصوص مدخلة في جوجل شيت بالخطأ)
-  const digits = value.toString().replace(/[^\d]/g, "");
-  if (!digits) return "---";
-  // تحويل لرقم وتنسيقه مع إضافة العملة
-  return Number(digits).toLocaleString() + " د.ع";
+  if (value === undefined || value === null || value === "" || value === "0") return "0 د.ع";
+
+  // تحويل القيمة لنص وتنظيفها من أي رمز غير رقمي
+  let cleanValue = value.toString().replace(/[^\d]/g, "");
+
+  // تحويل لنص رقمي
+  let numberValue = parseInt(cleanValue);
+
+  if (isNaN(numberValue)) return "---";
+
+  // تنسيق الرقم مع الفواصل (مثل 5,000) وإضافة العملة
+  return numberValue.toLocaleString('en-US') + " د.ع";
 }
 
 async function loadDataFromSheet() {
@@ -91,19 +97,19 @@ function updateCart() {
     document.getElementById("cartTotal").innerText = formattedTotal;
 }
 
+// استبدلي الدالة القديمة بهذه
 function addToCart(name, price) {
-  const cleanPrice =
-    typeof price === "string"
-      ? parseInt(price.replace(/[^\d]/g, "")) || 0
-      : price;
-  const item = cart.find((i) => i.name === name);
-  if (item) {
-    item.qty++;
-  } else {
-    cart.push({ name, price: cleanPrice, qty: 1 });
-  }
-  updateCart();
-  renderPage(currentPage);
+    // هذه الخطوة تضمن تحويل السعر لرقم صافي (مثلاً 5000 بدلاً من "5000")
+    const numericPrice = parseInt(price.toString().replace(/[^\d]/g, '')) || 0; 
+    
+    const item = cart.find((i) => i.name === name);
+    if (item) {
+        item.qty++;
+    } else {
+        cart.push({ name, price: numericPrice, qty: 1 });
+    }
+    updateCart();
+    renderPage(currentPage);
 }
 
 // 4. وظائف الحذف والتأكيد (المودال)
@@ -476,6 +482,7 @@ function closeProductModal() {
     content.classList.add('scale-95', 'opacity-0');
     setTimeout(() => modal.classList.add('hidden'), 300);
 }
+
 
 
 
