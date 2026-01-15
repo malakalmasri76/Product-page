@@ -1,0 +1,23 @@
+{
+  "name": "متجر سلة العراق",
+  "short_name": "سلة العراق",
+  "description": "منصة لبيع المنتجات بسعر جملة الجملة",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#facc15",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
