@@ -214,7 +214,7 @@ function renderPage(page) {
                             <div onclick="event.stopPropagation()">
                                 ${quantityInCart === 0 ? `
                                     <button onclick="addToCart('${product["اسم المنتج"]}', '${rawPrice}')" 
-                                        class="w-15 h-9 bg-yellow-400 text-white rounded-xl flex items-center justify-center transition-all active:scale-90 ${isOutOfStock ? 'opacity-30 pointer-events-none' : ''}">
+                                        class="w-9 h-9 bg-yellow-400 text-white rounded-xl flex items-center justify-center transition-all active:scale-90 ${isOutOfStock ? 'opacity-30 pointer-events-none' : ''}">
                                         <span class="material-icons-outlined text-[20px]">add_shopping_cart</span>
                                     </button>
                                 ` : `
@@ -472,6 +472,7 @@ function closeProductModal() {
     content.classList.add('scale-95', 'opacity-0');
     setTimeout(() => modal.classList.add('hidden'), 300);
 }
+
 
 
 
