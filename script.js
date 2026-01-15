@@ -204,6 +204,10 @@ function renderPage(page) {
                     <div class="image-container relative w-full h-64 cursor-pointer" onclick="openProductModal(${productIndex})">
                         <img src="${fixImageUrl(product["الصورة"])}" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
                         ${isOutOfStock ? `<div class="out-of-stock-badge">نفذت الكمية</div>` : ""}
+                        <div class="absolute top-2 right-2 bg-yellow-400 text-white text-[10px] px-2 py-1 rounded-lg font-black shadow-lg">
+                        <span class="text-blue-600 text-[10px] font-bold">سعر الرف</span>
+                        <span class="text-blue-700 font-black">${globalFormatPrice(product["سعر الرف"])}</span>
+                        </div>
                     </div>
 
                     <div class="p-4 text-right flex-grow flex flex-col">
@@ -463,5 +467,6 @@ function closeProductModal() {
     content.classList.add('scale-95', 'opacity-0');
     setTimeout(() => modal.classList.add('hidden'), 300);
 }
+
 
 
