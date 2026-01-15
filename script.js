@@ -214,14 +214,14 @@ function renderPage(page) {
                             <div onclick="event.stopPropagation()">
                                 ${quantityInCart === 0 ? `
                                     <button onclick="addToCart('${product["اسم المنتج"]}', '${rawPrice}')" 
-                                        class="w-9 h-9 bg-black text-white rounded-xl flex items-center justify-center hover:bg-zinc-800 transition-all active:scale-90 ${isOutOfStock ? 'opacity-30 pointer-events-none' : ''}">
+                                        class="w-9 h-9 bg-yellow-400 text-white rounded-xl flex items-center justify-center transition-all active:scale-90 ${isOutOfStock ? 'opacity-30 pointer-events-none' : ''}">
                                         <span class="material-icons-outlined text-[20px]">add_shopping_cart</span>
                                     </button>
                                 ` : `
-                                    <div class="flex items-center gap-1 bg-gray-100 rounded-xl p-1 border border-gray-200">
-                                        <button onclick="changeQtyByName('${product["اسم المنتج"]}', 1)" class="w-6 h-6 bg-white rounded-lg flex items-center justify-center text-[12px] font-bold shadow-sm">+</button>
+                                    <div class="flex items-center gap-1 bg-yellow-200 rounded-xl p-1 border border-gray-200">
+                                        <button onclick="changeQtyByName('${product["اسم المنتج"]}', 1)" class="w-6 h-6 bg-gray-100 rounded-lg flex items-center justify-center text-[12px] font-bold shadow-sm">+</button>
                                         <span class="text-[12px] font-black px-1">${quantityInCart}</span>
-                                        <button onclick="changeQtyByName('${product["اسم المنتج"]}', -1)" class="w-6 h-6 bg-white rounded-lg flex items-center justify-center text-[12px] font-bold shadow-sm">-</button>
+                                        <button onclick="changeQtyByName('${product["اسم المنتج"]}', -1)" class="w-6 h-6 bg-gray-100 rounded-lg flex items-center justify-center text-[12px] font-bold shadow-sm">-</button>
                                     </div>
                                 `}
                             </div>
@@ -434,15 +434,15 @@ function openProductModal(index) {
                 <div class="flex items-center justify-center">
                     ${quantityInCart === 0 ? `
                         <button onclick="addToCart('${product["اسم المنتج"]}', '${rawPrice}'); openProductModal(${index})" 
-                            class="w-full h-14 bg-black text-white rounded-2xl font-bold flex items-center justify-center gap-2 active:scale-95 transition-transform ${isOutOfStock ? 'opacity-30 pointer-events-none' : ''}">
+                            class="w-full h-14 bg-yellow-400 text-white rounded-2xl font-bold flex items-center justify-center gap-2 active:scale-95 transition-transform ${isOutOfStock ? 'opacity-30 pointer-events-none' : ''}">
                             <span class="material-icons-outlined">add_shopping_cart</span>
                             إضافة للسلة
                         </button>
                     ` : `
-                        <div class="flex items-center justify-between w-full bg-gray-100 p-2 rounded-2xl border border-gray-200 h-14">
-                            <button onclick="changeQtyByName('${product["اسم المنتج"]}', 1); openProductModal(${index})" class="w-10 h-10 bg-white rounded-xl shadow-sm font-bold text-xl">+</button>
+                        <div class="flex items-center justify-between w-full bg-yellow-200 p-2 rounded-2xl border border-gray-200 h-14">
+                            <button onclick="changeQtyByName('${product["اسم المنتج"]}', 1); openProductModal(${index})" class="w-10 h-10 bg-gray-100 rounded-xl shadow-sm font-bold text-xl">+</button>
                             <span class="text-lg font-black">${quantityInCart}</span>
-                            <button onclick="changeQtyByName('${product["اسم المنتج"]}', -1); openProductModal(${index})" class="w-10 h-10 bg-white rounded-xl shadow-sm font-bold text-xl">-</button>
+                            <button onclick="changeQtyByName('${product["اسم المنتج"]}', -1); openProductModal(${index})" class="w-10 h-10 bg-gray-100 rounded-xl shadow-sm font-bold text-xl">-</button>
                         </div>
                     `}
                 </div>
@@ -463,4 +463,5 @@ function closeProductModal() {
     content.classList.add('scale-95', 'opacity-0');
     setTimeout(() => modal.classList.add('hidden'), 300);
 }
+
 
