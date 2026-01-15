@@ -114,7 +114,7 @@ function addToCart(name, price) {
         cart.push({ name, price: numericPrice, qty: 1 });
     }
     updateCart();
-    renderPage(currentPage);
+    
 }
 
 // 4. وظائف الحذف والتأكيد (المودال)
@@ -484,6 +484,7 @@ function closeProductModal() {
     content.classList.add('scale-95', 'opacity-0');
     setTimeout(() => modal.classList.add('hidden'), 300);
 }
+
 
 
 
