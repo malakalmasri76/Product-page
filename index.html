@@ -38,20 +38,26 @@
 <body class="bg-slate-50">
     <header class="bg-white/80 shadow-sm sticky top-0 z-50 backdrop-blur-md">
         <div class="container mx-auto px-4 py-3 flex items-center justify-between gap-4">
-            <div class="flex items-center gap-3">
-                <img src="https://i.ibb.co/F4gw7BnV/logo.png" alt="Logo" class="h-10 w-auto">
-                <h1 class="text-xl font-bold text-slate-800 hidden md:block">سلة العراق</h1>
+            <div class="flex flex-col items-end text-right">
+                <div class="flex items-center gap-2">
+                    <img src="https://i.ibb.co/F4gw7BnV/logo.png" alt="Logo" class="h-8 md:h-10">
+                    <h1 class="text-xl md:text-2xl font-black text-slate-800 tracking-tighter">سلة العراق</h1>
+                </div>
+
+                <p class="text-[10px] md:text-xs text-slate-500 font-medium mt-1 leading-none opacity-80">
+                    لتجارة وتوزيع المنتجات الغذائية والاستهلاكية
+                </p>
             </div>
 
             <div class="relative cursor-pointer order-last" onclick="toggleCart()">
-                <span class="material-icons-outlined text-3xl text-slate-700">shopping_basket</span>
+                <span class="material-icons-outlined text-3xl text-slate-700">shopping_cart</span>
                 <span id="cartCount"
                     class="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full font-bold">0</span>
             </div>
 
             <div class="relative flex-grow max-w-md">
                 <input type="text" id="searchInput" onkeyup="filterProducts()" placeholder="ابحث عن منتج..."
-                    class="w-full py-2 pr-10 pl-4 bg-gray-50 border border-gray-200 rounded-full text-sm">
+                    class="w-full py-2 pr-10 pl-4 bg-gray-50 border-none focus:ring-2 focus:ring-yellow-400 rounded-full text-sm">
                 <span class="absolute inset-y-0 right-3 flex items-center text-gray-400">
                     <span class="material-icons-outlined">search</span>
                 </span>
