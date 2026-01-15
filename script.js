@@ -14,18 +14,23 @@ window.onload = loadDataFromSheet;
 
 // دالة عالمية لتنظيف وتنسيق أي سعر
 function globalFormatPrice(value) {
-  if (value === undefined || value === null || value === "" || value === "0") return "0 د.ع";
+  if (!value || value === "0") return "0 د.ع";
 
-  // تحويل القيمة لنص وتنظيفها من أي رمز غير رقمي
-  let cleanValue = value.toString().replace(/[^\d]/g, "");
+  // تحويل القيمة لنص
+  let str = value.toString();
 
-  // تحويل لنص رقمي
-  let numberValue = parseInt(cleanValue);
+  // إذا كان هناك نقطة (مثل 7500.00)، نأخذ فقط ما قبل النقطة
+  if (str.includes('.')) {
+    str = str.split('.')[0];
+  }
 
-  if (isNaN(numberValue)) return "---";
+  // حذف أي شيء ليس رقماً (مثل £ أو الفواصل)
+  const digits = str.replace(/[^\d]/g, "");
 
-  // تنسيق الرقم مع الفواصل (مثل 5,000) وإضافة العملة
-  return numberValue.toLocaleString('en-US') + " د.ع";
+  if (!digits) return "---";
+
+  // تحويل الرقم إلى تنسيق عراقي (مثلاً 7,500) وإضافة العملة
+  return Number(digits).toLocaleString('en-US') + " د.ع";
 }
 
 async function loadDataFromSheet() {
@@ -395,17 +400,14 @@ function openProductModal(index) {
     const modal = document.getElementById('productModal');
     const content = document.getElementById('modalContent');
     const body = document.getElementById('modalBody');
-
-    // تأكدي أن هذه المتغيرات معرفة
+  
     const hasOffer = product["العرض"] && product["العرض"] !== "0";
+    const getRaw = (val) => val ? val.toString().split('.')[0].replace(/[^\d]/g, '') : "0";
     const cartItem = cart.find((item) => item.name === product["اسم المنتج"]);
     const quantityInCart = cartItem ? cartItem.qty : 0;
     const isOutOfStock = product["الحالة"] === "نفذت الكمية";
-    const rawPrice = (hasOffer && product["السعر بعد العرض"]) ? 
-                     product["السعر بعد العرض"].toString().replace(/[^\d]/g, '') : 
-                     product["السعر"]?.toString().replace(/[^\d]/g, '') || "0";
-
-    // إجبار شكل المودال أن يكون مربعاً عبر الـ Style المباشر
+    const rawPrice = hasOffer ? getRaw(product["السعر بعد العرض"]) : getRaw(product["السعر"]);
+  
     content.style.maxWidth = "450px"; 
     content.style.width = "90%";
     content.className = "bg-white rounded-[35px] overflow-hidden shadow-2xl transform transition-all duration-300";
@@ -482,6 +484,7 @@ function closeProductModal() {
     content.classList.add('scale-95', 'opacity-0');
     setTimeout(() => modal.classList.add('hidden'), 300);
 }
+
 
 
 
