@@ -160,7 +160,7 @@ function changeQty(index, delta) {
   cart[index].qty += delta;
   if (cart[index].qty <= 0) cart.splice(index, 1);
   updateCart();
-  renderPage(currentPage, false);
+  renderPage(currentPage, fal);
 }
 
 function changeQtyByName(name, delta) {
@@ -170,7 +170,7 @@ function changeQtyByName(name, delta) {
     if (cart[index].qty <= 0) cart.splice(index, 1);
   }
   updateCart();
-  renderPage(currentPage, false);
+  renderPage(currentPage);
 }
 
 // 5. عرض المنتجات (UI) مع خاصية الـ Flip
@@ -496,6 +496,7 @@ function closeProductModal() {
     content.classList.add('scale-95', 'opacity-0');
     setTimeout(() => modal.classList.add('hidden'), 300);
 }
+
 
 
 
