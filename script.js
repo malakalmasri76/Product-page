@@ -294,26 +294,27 @@ function renderPage(page, shouldScroll = true ) {
 function createCategoryButtons() {
   const container = document.getElementById("categoryBar");
   if (!container) return;
+
   const uniqueCategories = [
     "الكل",
     ...new Set(allProducts.map((p) => p["الفئة"]).filter((c) => c)),
   ];
+
   container.innerHTML = uniqueCategories
     .map(
       (cat) => `
         <button onclick="setCategory('${cat}')" 
-            class="px-5 py-2 rounded-full border transition-all font-bold text-sm mb-2
+            class="category-btn border transition-all 
             ${
               currentCategory === cat
                 ? "bg-yellow-400 text-white border-yellow-400 shadow-md"
-                : "bg-white text-slate-600 border-slate-200 shadow-sm"
+                : "bg-gray-50 text-slate-600 border-slate-200"
             }">
             ${cat}
         </button>`
     )
     .join("");
 }
-
 function setCategory(cat) {
   currentCategory = cat;
   createCategoryButtons();
@@ -493,6 +494,7 @@ function closeProductModal() {
     content.classList.add('scale-95', 'opacity-0');
     setTimeout(() => modal.classList.add('hidden'), 300);
 }
+
 
 
 
