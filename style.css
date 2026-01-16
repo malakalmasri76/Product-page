@@ -205,8 +205,16 @@ header p {
     padding: 15px 10px;
     scrollbar-width: none; /* إخفاء الشريط في فايرفوكس */
     -ms-overflow-style: none; /* إخفاء الشريط في إنترنت إكسبلورر */
+    cursor: grab; /* شكل اليد المفتوحة */
+    user-select: none; /* منع تحديد نص الأزرار أثناء السحب */
+    -webkit-user-select: none;
+    scroll-behavior: smooth; /* لجعل الحركة انسيابية */
 }
 
+/* عندما يتم السحب فعلياً */
+#categoryBar:active {
+    scroll-behavior: auto; /* إيقاف السلاسة أثناء السحب اليدوي ليكون الاستجابة فورية */
+}
 /* إخفاء شريط التمرير في كروم وسفاري */
 #categoryBar::-webkit-scrollbar {
     display: none;
@@ -221,4 +229,5 @@ header p {
     font-size: 14px;
     transition: all 0.3s ease;
 }
+
 
