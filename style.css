@@ -235,17 +235,27 @@ header p {
     box-shadow: 0 8px 20px rgba(61, 126, 82, 0.3);
     transform: translateY(-2px); /* رفعة بسيطة للزر المختار */
 }
-/* الحاوية التي تضم الشريط بالكامل */
 .category-wrapper {
-    position: sticky; /* جعل العنصر يلتصق */
-    top: 0;           /* المسافة من أعلى الشاشة */
-    z-index: 50;    /* لضمان ظهوره فوق المنتجات */
-    background-color: white; /* ضروري لكي لا تظهر المنتجات من خلفه أثناء النزول */
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); /* ظل خفيف لتمييزه عن الخلفية */
-    border-bottom: 1px solid #f3f4f6;
-    backdrop-filter: blur(8px); 
-    background-color: rgba(255, 255, 255, 0.9);
+    position: sticky;
+    top: 84px; /* هذا الرقم يعتمد على ارتفاع الهيدر عندك، جربي 64px أو 70px */
+    z-index: 40; /* يجب أن يكون أقل من الهيدر (50) ليعمل بسلاسة */
+    background-color: #ffffff; /* لون صلب أسرع في الرندرة */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    border-bottom: 1px solid #f1f5f9;
+    /* إضافة خاصية لتسريع العتاد */
+    transform: translateZ(0); 
+    will-change: transform;
 }
+
+/* تحسين أداء الهيدر أيضاً */
+header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background-color: white !important; /* إلغاء الشفافية مؤقتاً للتأكد من السرعة */
+    backdrop-filter: none !important; 
+}
+
 
 
 
