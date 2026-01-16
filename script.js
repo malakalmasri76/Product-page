@@ -495,6 +495,41 @@ function closeProductModal() {
     setTimeout(() => modal.classList.add('hidden'), 300);
 }
 
+// احذفي كل هذا الجزء من البداية للنهاية
+const slider = document.getElementById('categoryBar');
+let isDown = false;
+let startX;
+let scrollLeft;
+
+if (slider) {
+    slider.addEventListener('mousedown', (e) => {
+        isDown = true;
+        slider.style.cursor = 'grabbing';
+        startX = e.pageX - slider.offsetLeft;
+        scrollLeft = slider.scrollLeft;
+        slider.style.scrollBehavior = 'auto'; 
+    });
+
+    slider.addEventListener('mouseleave', () => {
+        isDown = false;
+        slider.style.cursor = 'grab';
+    });
+
+    slider.addEventListener('mouseup', () => {
+        isDown = false;
+        slider.style.cursor = 'grab';
+        slider.style.scrollBehavior = 'smooth';
+    });
+
+    slider.addEventListener('mousemove', (e) => {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - slider.offsetLeft;
+        const walk = (x - startX) * 1.5; 
+        slider.scrollLeft = scrollLeft - walk;
+    });
+}
+
 
 
 
