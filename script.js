@@ -300,24 +300,16 @@ function createCategoryButtons() {
     ...new Set(allProducts.map((p) => p["الفئة"]).filter((c) => c)),
   ];
 
-  // خريطة لربط كل قسم بأيقونة معينة (يمكنك تعديل الأسماء هنا)
-  const categoryIcons = {
-    "الكل": "grid_view",
-    "مناديل الصفاء": "clean_hands",
-    "مناديل سوز": "layers",
-    "مناديل مرتب": "eco",
-    "المقبلات": "restaurant_menu", // مثال إذا كان لديكِ مقبلات
-    "السلطات": "eco"
-  };
-
   container.innerHTML = uniqueCategories
     .map(
       (cat) => `
         <button onclick="setCategory('${cat}')" 
-            class="category-btn ${currentCategory === cat ? "active" : ""}">
-            <span class="material-icons-outlined" style="font-size: 20px;">
-                ${categoryIcons[cat] || "label"} 
-            </span>
+            class="category-btn border transition-all 
+            ${
+              currentCategory === cat
+                ? "bg-yellow-400 text-white border-yellow-400 shadow-md"
+                : "bg-gray-50 text-slate-600 border-slate-200"
+            }">
             ${cat}
         </button>`
     )
