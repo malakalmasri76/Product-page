@@ -237,9 +237,9 @@ header p {
 }
 .category-wrapper {
     position: sticky;
-    top: 64px; /* هذا الرقم يعتمد على ارتفاع الهيدر عندك، جربي 64px أو 70px */
-    z-index: 40; /* يجب أن يكون أقل من الهيدر (50) ليعمل بسلاسة */
-    background-color: #ffffff; /* لون صلب أسرع في الرندرة */
+    top: 70px; 
+    z-index: 40; 
+    background-color: #ffffff; 
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     border-bottom: 1px solid #f1f5f9;
     /* إضافة خاصية لتسريع العتاد */
@@ -255,6 +255,7 @@ header {
     background-color: white !important; /* إلغاء الشفافية مؤقتاً للتأكد من السرعة */
     backdrop-filter: none !important; 
 }
+
 
 
 
