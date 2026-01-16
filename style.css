@@ -242,6 +242,8 @@ header p {
     background-color: white; /* يمنع ظهور المنتجات خلف الهيدر أثناء التمرير */
     display: flex;
     flex-direction: column;
+    backdrop-filter: blur(8px); /* تأثير ضبابي (Glassmorphism) */
+    background-color: rgba(255, 255, 255,
 }
 
 .category-wrapper {
@@ -249,6 +251,7 @@ header p {
     border-top: 1px solid #f3f4f6; /* فاصل بسيط بين الهيدر والأزرار */
     width: 100%;
 }
+
 
 
 
