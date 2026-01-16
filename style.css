@@ -237,4 +237,8 @@ header p {
     transform: translateY(-2px); /* رفعة بسيطة للزر المختار */
 }
 
+.category-wrapper {
+    backdrop-filter: blur(8px); /* تأثير ضبابي (Glassmorphism) */
+    background-color: rgba(255, 255, 255, 0.9); /* أبيض شفاف */
+}
 
