@@ -198,10 +198,9 @@ header p {
 }
 .category-wrapper {
     position: sticky;
-    top: 0; /* سنعدل هذا لاحقاً لو احتجنا */
-    z-index: 1000;
+    top: 84px; 
+    z-index: 40;
     background: white;
-    /* حذفنا أي ظلال ثقيلة أو بلور (Blur) مؤقتاً لتسريع الموقع */
 }
 #categoryBar {
     display: flex;
@@ -225,6 +224,7 @@ header p {
     box-shadow: 0 8px 20px rgba(61, 126, 82, 0.3);
     transform: translateY(-2px); /* رفعة بسيطة للزر المختار */
 }
+
 
 
 
