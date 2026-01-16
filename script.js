@@ -494,8 +494,42 @@ function closeProductModal() {
     content.classList.add('scale-95', 'opacity-0');
     setTimeout(() => modal.classList.add('hidden'), 300);
 }
+const slider = document.getElementById('categoryBar');
+let isDown = false;
+let startX;
+let scrollLeft;
 
+if (slider) {
+    // عند الضغط بالماوس
+    slider.addEventListener('mousedown', (e) => {
+        isDown = true;
+        slider.classList.add('active'); // يمكنك إضافة تأثير CSS هنا إذا أردتِ
+        startX = e.pageX - slider.offsetLeft;
+        scrollLeft = slider.scrollLeft;
+        slider.style.cursor = 'grabbing'; // تغيير شكل الماوس لليد المغلقة
+    });
 
+    // عند خروج الماوس من منطقة الشريط
+    slider.addEventListener('mouseleave', () => {
+        isDown = false;
+        slider.style.cursor = 'grab';
+    });
+
+    // عند رفع الضغط عن الماوس
+    slider.addEventListener('mouseup', () => {
+        isDown = false;
+        slider.style.cursor = 'grab';
+    });
+
+    // حركة الماوس أثناء الضغط
+    slider.addEventListener('mousemove', (e) => {
+        if (!isDown) return; // لا تفعل شيئاً إذا لم يكن الماوس مضغوطاً
+        e.preventDefault();
+        const x = e.pageX - slider.offsetLeft;
+        const walk = (x - startX) * 2; // سرعة السحب (يمكنك زيادة الرقم 2 لزيادة السرعة)
+        slider.scrollLeft = scrollLeft - walk;
+    });
+}
 
 
 
