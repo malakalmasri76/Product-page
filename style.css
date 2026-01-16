@@ -196,28 +196,28 @@ header p {
         font-size: 8px;
     }
 }
-/* حاوية التصنيفات العلوية */
 #categoryBar {
     display: flex;
-    overflow-x: auto; /* تفعيل التمرير الأفقي */
-    white-space: nowrap; /* منع نزول الأزرار لسطر جديد */
+    overflow-x: auto;
+    white-space: nowrap;
     gap: 10px;
     padding: 15px 10px;
-    scrollbar-width: none; /* إخفاء الشريط في فايرفوكس */
-    -ms-overflow-style: none; /* إخفاء الشريط في إنترنت إكسبلورر */
+    /* تحسين شكل شريط التمرير للكمبيوتر */
+    scrollbar-width: thin; 
+    scrollbar-color: #facc15 #f3f4f6; 
 }
 
-/* إخفاء شريط التمرير في كروم وسفاري */
+/* تخصيص شكل الشريط لمتصفحات كروم وسفاري على الكمبيوتر */
 #categoryBar::-webkit-scrollbar {
-    display: none;
+    height: 5px; /* تقليل سمك الشريط */
 }
 
-/* تحسين شكل الأزرار داخل الشريط */
-.category-btn {
-    flex: 0 0 auto; /* منع الأزرار من التخلص أو التمدد */
-    padding: 8px 20px;
-    border-radius: 50px;
-    font-weight: bold;
-    font-size: 14px;
-    transition: all 0.3s ease;
+#categoryBar::-webkit-scrollbar-track {
+    background: #f3f4f6;
+    border-radius: 10px;
+}
+
+#categoryBar::-webkit-scrollbar-thumb {
+    background: #facc15; /* لون متناسق مع هوية الموقع الأصفر */
+    border-radius: 10px;
 }
