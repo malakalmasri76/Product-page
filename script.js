@@ -500,37 +500,34 @@ let startX;
 let scrollLeft;
 
 if (slider) {
-    // عند الضغط بالماوس
     slider.addEventListener('mousedown', (e) => {
         isDown = true;
-        slider.classList.add('active'); // يمكنك إضافة تأثير CSS هنا إذا أردتِ
+        slider.style.cursor = 'grabbing';
         startX = e.pageX - slider.offsetLeft;
         scrollLeft = slider.scrollLeft;
-        slider.style.cursor = 'grabbing'; // تغيير شكل الماوس لليد المغلقة
+        // إلغاء أي سلاسة مؤقتاً أثناء السحب اليدوي لزيادة السرعة
+        slider.style.scrollBehavior = 'auto'; 
     });
 
-    // عند خروج الماوس من منطقة الشريط
     slider.addEventListener('mouseleave', () => {
         isDown = false;
         slider.style.cursor = 'grab';
     });
 
-    // عند رفع الضغط عن الماوس
     slider.addEventListener('mouseup', () => {
         isDown = false;
         slider.style.cursor = 'grab';
+        slider.style.scrollBehavior = 'smooth'; // إعادة السلاسة بعد الانتهاء
     });
 
-    // حركة الماوس أثناء الضغط
     slider.addEventListener('mousemove', (e) => {
-        if (!isDown) return; // لا تفعل شيئاً إذا لم يكن الماوس مضغوطاً
+        if (!isDown) return;
         e.preventDefault();
         const x = e.pageX - slider.offsetLeft;
-        const walk = (x - startX) * 2; // سرعة السحب (يمكنك زيادة الرقم 2 لزيادة السرعة)
+        const walk = (x - startX) * 1.5; // تقليل السرعة قليلاً لزيادة السلاسة
         slider.scrollLeft = scrollLeft - walk;
     });
 }
-
 
 
 
