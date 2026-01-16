@@ -85,7 +85,7 @@ function updateCart() {
                         <h4 class="text-xs font-bold text-zinc-900">${
                           item.name
                         }</h4>
-                        <p class="text-[10px] text-gray-400">${item.price.toLocaleString()} د.ع</p>
+                        <p class="text-[10px] text-gray-400">${globalFormatPrice(item.price)}</p>
                     </div>
                     <div class="flex items-center gap-2">
                         <button onclick="changeQty(${index}, 1)" class="w-7 h-7 bg-gray-100 rounded">+</button>
@@ -194,10 +194,7 @@ function renderPage(page, shouldScroll = true ) {
         const hasOffer = product["العرض"] && product["العرض"].toString().trim() !== "" && product["العرض"] !== "0";
         
         // تجهيز السعر الخام للإضافة للسلة
-        const rawPrice = (hasOffer && product["السعر بعد العرض"]) ? 
-                         product["السعر بعد العرض"].toString().replace(/[^\d]/g, '') : 
-                         product["السعر"]?.toString().replace(/[^\d]/g, '') || "0";
-
+        const rawPrice = product["السعر"]?.toString().replace(/[^\d]/g, '') || "0";
         const cartItem = cart.find((item) => item.name === product["اسم المنتج"]);
         const quantityInCart = cartItem ? cartItem.qty : 0;
 
@@ -418,7 +415,7 @@ function openProductModal(index) {
     const cartItem = cart.find((item) => item.name === product["اسم المنتج"]);
     const quantityInCart = cartItem ? cartItem.qty : 0;
     const isOutOfStock = product["الحالة"] === "نفذت الكمية";
-    const rawPrice = hasOffer ? getRaw(product["السعر بعد العرض"]) : getRaw(product["السعر"]);
+    const rawPrice = getRaw(product["السعر"]);
   
     content.style.maxWidth = "450px"; 
     content.style.width = "90%";
@@ -459,7 +456,7 @@ function openProductModal(index) {
                         <span class="text-blue-700 font-black">${globalFormatPrice(product["سعر الرف"])}</span>
                     </div>
                     <div class="bg-orange-50/50 p-3 rounded-xl border border-orange-100 flex flex-col items-center">
-                        <span class="text-orange-600 text-[10px] font-bold">العدد بالكرتون</span>
+                        <span class="text-orange-600 text-[10px] font-bold">العدد</span>
                         <span class="text-orange-700 font-black">${product["العدد"] || "---"}</span>
                     </div>
                 </div>
@@ -496,6 +493,7 @@ function closeProductModal() {
     content.classList.add('scale-95', 'opacity-0');
     setTimeout(() => modal.classList.add('hidden'), 300);
 }
+
 
 
 
