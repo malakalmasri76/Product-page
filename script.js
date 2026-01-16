@@ -308,7 +308,7 @@ function createCategoryButtons() {
             ${
               currentCategory === cat
                 ? "bg-yellow-400 text-white border-yellow-400 shadow-md"
-                : "bg-yellow-200 text-slate-600 border-slate-200"
+                : "bg-yellow-50 text-slate-600 border-slate-200"
             }">
             ${cat}
         </button>`
@@ -530,6 +530,7 @@ if (slider) {
         slider.scrollLeft = scrollLeft - walk;
     });
 }
+
 
 
 
