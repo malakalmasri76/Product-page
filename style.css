@@ -237,7 +237,7 @@ header p {
 }
 .category-wrapper {
     position: sticky;
-    top: 70px; 
+    top: 74px; 
     z-index: 40; 
     background-color: #ffffff; 
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
@@ -255,6 +255,7 @@ header {
     background-color: white !important; /* إلغاء الشفافية مؤقتاً للتأكد من السرعة */
     backdrop-filter: none !important; 
 }
+
 
 
 
