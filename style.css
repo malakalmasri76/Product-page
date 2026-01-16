@@ -235,22 +235,36 @@ header p {
     box-shadow: 0 8px 20px rgba(61, 126, 82, 0.3);
     transform: translateY(-2px); /* رفعة بسيطة للزر المختار */
 }
+
 .sticky-container {
     position: sticky;
     top: 0;
-    z-index: 100; /* أعلى من المنتجات والمودال */
-    background-color: white; /* يمنع ظهور المنتجات خلف الهيدر أثناء التمرير */
-    display: flex;
-    flex-direction: column;
-    backdrop-filter: blur(8px); /* تأثير ضبابي (Glassmorphism) */
-    background-color: rgba(255, 255, 255,
+    z-index: 100;
+    
+    /* جعل الخلفية بيضاء شفافة بنسبة 80% */
+    background-color: rgba(255, 255, 255, 0.8); 
+    
+    /* تأثير البلور (الزجاجي) */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px); /* لدعم متصفح سفاري وايفون */
+    
+    /* حدود بسيطة من الأسفل لتمييز الحاوية */
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    
+    /* لتحسين الأداء ومنع الارتجاج أثناء التمرير */
+    transition: background-color 0.3s ease;
 }
 
+/* تأكدي من إزالة أي خلفيات صلبة من الهيدر وشريط التصنيفات بالداخل */
+header, .category-wrapper {
+    background-color: transparent !important;
+}
 .category-wrapper {
     background-color: white;
     border-top: 1px solid #f3f4f6; /* فاصل بسيط بين الهيدر والأزرار */
     width: 100%;
 }
+
 
 
 
