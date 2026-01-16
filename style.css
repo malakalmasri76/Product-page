@@ -238,7 +238,14 @@ header p {
 }
 
 .category-wrapper {
+    position: sticky; /* جعل العنصر يلتصق */
+    top: 84px;           /* المسافة من أعلى الشاشة */
+    z-index: 1000;    /* لضمان ظهوره فوق المنتجات */
+    background-color: white; /* ضروري لكي لا تظهر المنتجات من خلفه أثناء النزول */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); /* ظل خفيف لتمييزه عن الخلفية */
+    border-bottom: 1px solid #f3f4f6;
     backdrop-filter: blur(8px); /* تأثير ضبابي (Glassmorphism) */
     background-color: rgba(255, 255, 255, 0.9); /* أبيض شفاف */
 }
+
 
