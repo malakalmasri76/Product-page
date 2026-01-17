@@ -212,7 +212,7 @@ function renderPage(page, shouldScroll = true ) {
                         <span class="material-icons-outlined text-[18px] text-slate-600 hidden">autorenew</span>
                     </button>
 
-                    <div class="image-container relative w-full h-64 cursor-pointer" onclick="openProductModal(${productIndex})">
+                    <div class="image-container relative w-full cursor-pointer" onclick="openProductModal(${productIndex})">
                         <img src="${fixImageUrl(product["الصورة"])}" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
                         ${isOutOfStock ? `<div class="out-of-stock-badge">نفذت الكمية</div>` : ""}
                     </div>
@@ -529,6 +529,7 @@ if (slider) {
         slider.scrollLeft = scrollLeft - walk;
     });
 }
+
 
 
 
