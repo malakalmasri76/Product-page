@@ -173,7 +173,7 @@ function changeQtyByName(name, delta) {
   renderPage(currentPage, false);
 }
 
-// 5. عرض المنتجات (UI) مع خاصية الـ Flip والتنسيق المحسن للصور
+// 5. عرض المنتجات (UI) مع خاصية الـ Flip
 function renderPage(page, shouldScroll = true ) {
     currentPage = page;
     if (shouldScroll) {
@@ -282,6 +282,7 @@ function renderPage(page, shouldScroll = true ) {
     }).join("");
     updatePaginationControls();
 }
+
 // 6. الأقسام والفلترة
 function createCategoryButtons() {
   const container = document.getElementById("categoryBar");
@@ -490,13 +491,6 @@ function openProductModal(index) {
     }, 10);
 }
 
-    modal.classList.remove('hidden');
-    setTimeout(() => {
-        content.classList.remove('scale-95', 'opacity-0');
-        content.classList.add('scale-100', 'opacity-100');
-    }, 10);
-}
-
 function closeProductModal() {
     const modal = document.getElementById('productModal');
     const content = document.getElementById('modalContent');
@@ -538,31 +532,3 @@ if (slider) {
         slider.scrollLeft = scrollLeft - walk;
     });
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
