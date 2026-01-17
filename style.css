@@ -64,6 +64,7 @@ body {
 .image-container {
     width: 100%;
     height: 300px; 
+    overflow: hidden;
     position: relative;
     background-color: #f8fafc;
 }
@@ -262,6 +263,7 @@ header, .category-wrapper {
     border-top: 1px solid #f3f4f6; /* فاصل بسيط بين الهيدر والأزرار */
     width: 100%;
 }
+
 
 
 
