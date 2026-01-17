@@ -114,17 +114,27 @@ body {
     transform: translate(-50%, -50%) rotate(-15deg);
     background-color: rgba(220, 38, 38, 0.95);
     color: white;
-    padding: 6px 15px;
-    border-radius: 6px;
-    font-weight: bold;
-    font-size: 0.9rem;
-    z-index: 10;
-    border: 2px solid white;
+    padding: 8px 20px;
+    border-radius: 10px;
+    font-weight: 900;
+    font-size: 1rem;
+    z-index: 50; /* تأكدي أنها أعلى قيمة في الكارت */
+    border: 3px solid white;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
     pointer-events: none;
+    white-space: nowrap;
 }
 
-.opacity-50 img {
-    filter: grayscale(100%);
+/* الكلاس الذي سيتم إضافته للصورة عبر الجافاسكربت */
+.out-of-stock-mode {
+    filter: grayscale(1) brightness(0.7) !important; /* تحويل لرمادي وتعتيم */
+    opacity: 0.7;
+    transition: all 0.4s ease;
+}
+
+/* لمنع أي تأثيرات حركية على كرت المنتج النافذ (اختياري) */
+.product-card-inner.is-out-of-stock:hover .card-front img {
+    transform: scale(1); /* نمنع التكبير إذا نفدت الكمية */
 }
 
 /* 4. السلة الجانبية (Drawer) */
@@ -263,6 +273,7 @@ header, .category-wrapper {
     border-top: 1px solid #f3f4f6; /* فاصل بسيط بين الهيدر والأزرار */
     width: 100%;
 }
+
 
 
 
