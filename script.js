@@ -497,6 +497,16 @@ function closeProductModal() {
     content.classList.add('scale-95', 'opacity-0');
     setTimeout(() => modal.classList.add('hidden'), 300);
 }
+// ميزة الإغلاق عند النقر خارج النافذة
+window.addEventListener('click', function(event) {
+    const modal = document.getElementById('productModal');
+    const modalContent = document.getElementById('modalContent');
+    
+    // إذا كان المودال مفتوحاً (ليس مخفياً) وكان النقر على المودال نفسه (الخلفية) وليس المحتوى
+    if (event.target === modal) {
+        closeProductModal();
+    }
+});
 
 // احذفي كل هذا الجزء من البداية للنهاية
 const slider = document.getElementById('categoryBar');
@@ -532,3 +542,4 @@ if (slider) {
         slider.scrollLeft = scrollLeft - walk;
     });
 }
+
