@@ -77,24 +77,27 @@ function updateCart() {
     cartItems.innerHTML = `<div class="text-center py-20 text-gray-400 text-sm italic">السلة فارغة حالياً</div>`;
   } else {
     cartItems.innerHTML = cart
-      .map((item, index) => {
-        total += item.price * item.qty;
-        return `
-                <div class="flex justify-between items-center border-b border-gray-100 pb-4 mb-4">
-                    <div class="text-right">
-                        <h4 class="text-xs font-bold text-zinc-900">${
-                          item.name
-                        }</h4>
-                        <p class="text-[10px] text-gray-400">${globalFormatPrice(item.price)}</p>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <button onclick="changeQty(${index}, 1)" class="w-7 h-7 bg-gray-100 rounded">+</button>
-                        <span class="text-xs font-bold">${item.qty}</span>
-                        <button onclick="changeQty(${index}, -1)" class="w-7 h-7 bg-gray-100 rounded">-</button>
-                    </div>
-                </div>`;
-      })
-      .join("");
+  .map((item, index) => {
+    total += item.price * item.qty;
+    return `
+      <div class="flex justify-between items-center border-b border-gray-100 pb-4 mb-4 gap-3">
+          <div class="w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden">
+              <img src="${item.image}" class="w-full h-full object-contain p-1">
+          </div>
+
+          <div class="text-right flex-grow">
+              <h4 class="text-xs font-bold text-zinc-900 mb-1">${item.name}</h4>
+              <p class="text-[10px] text-gray-400">${globalFormatPrice(item.price)}</p>
+          </div>
+
+          <div class="flex items-center gap-2 bg-gray-50 p-1 rounded-lg">
+              <button onclick="changeQty(${index}, 1)" class="w-6 h-6 bg-white shadow-sm rounded flex items-center justify-center text-zinc-800 font-bold">+</button>
+              <span class="text-xs font-bold min-w-[15px] text-center">${item.qty}</span>
+              <button onclick="changeQty(${index}, -1)" class="w-6 h-6 bg-white shadow-sm rounded flex items-center justify-center text-zinc-800 font-bold">-</button>
+          </div>
+      </div>`;
+  })
+  .join("");
   }
 
   const formattedTotal = globalFormatPrice(total);
@@ -102,20 +105,23 @@ function updateCart() {
     document.getElementById("cartTotal").innerText = formattedTotal;
 }
 
-// استبدلي الدالة القديمة بهذه
-function addToCart(name, price) {
-    // هذه الخطوة تضمن تحويل السعر لرقم صافي (مثلاً 5000 بدلاً من "5000")
+function addToCart(name, price, imageUrl) {
     const numericPrice = parseInt(price.toString().replace(/[^\d]/g, '')) || 0; 
     
     const item = cart.find((i) => i.name === name);
     if (item) {
         item.qty++;
     } else {
-        cart.push({ name, price: numericPrice, qty: 1 });
+        // تخزين الاسم والسعر والصورة
+        cart.push({ 
+            name: name, 
+            price: numericPrice, 
+            qty: 1, 
+            image: imageUrl 
+        });
     }
     updateCart();
-  renderPage(currentPage, false);
-    
+    renderPage(currentPage, false);
 }
 
 // 4. وظائف الحذف والتأكيد (المودال)
@@ -193,6 +199,7 @@ function renderPage(page, shouldScroll = true ) {
         const cartItem = cart.find((item) => item.name === product["اسم المنتج"]);
         const quantityInCart = cartItem ? cartItem.qty : 0;
         const productIndex = start + index;
+        const productImage = fixImageUrl(product["الصورة"]);
 
         // --- التعديل هنا: إضافة كلاس الرمادي إذا كان المنتج نافذاً ---
         const imgStatusClass = isOutOfStock ? "out-of-stock-mode" : "";
@@ -210,9 +217,9 @@ function renderPage(page, shouldScroll = true ) {
 
                     <div class="image-container relative w-full cursor-pointer" onclick="openProductModal(${productIndex})">
                         
-                        <div class="image-bg-blur" style="background-image: url('${fixImageUrl(product["الصورة"])}')"></div>
+                        <div class="image-bg-blur" style="background-image: url('${productImage}')"></div>
                         
-                        <img src="${fixImageUrl(product["الصورة"])}" class="main-product-img ${imgStatusClass}">
+                        <img src="${productImage}" class="main-product-img ${imgStatusClass}">
                         
                         ${isOutOfStock ? `<div class="out-of-stock-badge">نفذت الكمية</div>` : ""}
                     </div>
@@ -224,7 +231,7 @@ function renderPage(page, shouldScroll = true ) {
                             </h3>
                             <div onclick="event.stopPropagation()">
                                 ${quantityInCart === 0 ? `
-                                    <button onclick="addToCart('${product["اسم المنتج"]}', '${rawPrice}')" 
+                                    <button onclick="addToCart('${product["اسم المنتج"]}', '${rawPrice}', '${productImage}')" 
                                         class="w-10 h-10 bg-yellow-400 text-white rounded-xl flex items-center justify-center transition-all active:scale-90 ${isOutOfStock ? 'opacity-30 pointer-events-none' : ''}">
                                         <span class="material-icons-outlined text-[20px]">add_shopping_cart</span>
                                     </button>
@@ -282,7 +289,6 @@ function renderPage(page, shouldScroll = true ) {
     }).join("");
     updatePaginationControls();
 }
-
 // 6. الأقسام والفلترة
 function createCategoryButtons() {
   const container = document.getElementById("categoryBar");
@@ -542,4 +548,5 @@ if (slider) {
         slider.scrollLeft = scrollLeft - walk;
     });
 }
+
 
