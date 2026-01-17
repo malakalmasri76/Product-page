@@ -15,7 +15,7 @@ body {
 /* 2. حاوية الكارد (خاصية الـ Flip) */
 .product-card-container {
     perspective: 1000px;
-    height: 360px; /* طول ثابت لضمان تناسق الشبكة */
+    height: 440px; /* طول ثابت لضمان تناسق الشبكة */
     margin-bottom: 1rem;
     user-select: none; /* منع تحديد النص عند النقر المزدوج */
 }
@@ -63,7 +63,7 @@ body {
 /* تنسيق الصور لضمان ظهورها كاملة */
 .image-container {
     width: 100%;
-    height: 180px; 
+    height: 250px; 
     overflow: hidden; /* ضروري جداً لقص الصورة عند التكبير */
     position: relative;
     background-color: #f8fafc;
@@ -263,6 +263,7 @@ header, .category-wrapper {
     border-top: 1px solid #f3f4f6; /* فاصل بسيط بين الهيدر والأزرار */
     width: 100%;
 }
+
 
 
 
