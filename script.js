@@ -208,8 +208,8 @@ function renderPage(page, shouldScroll = true ) {
                 <div class="card-front bg-white border border-slate-100 shadow-sm rounded-3xl overflow-hidden flex flex-col">
                     
                     <button onclick="event.stopPropagation(); document.getElementById('card-${productIndex}').classList.toggle('is-flipped')" 
-                        class="absolute top-2 left-2 z-20 w-8 h-8 flex items-center justify-center shadow-sm">
-                        <span class="material-icons-outlined text-[18px] text-slate-600 hidden">autorenew</span>
+                        class="absolute top-2 left-2 z-20 w-8 h-8 flex items-center justify-center">
+                        <span class="material-icons-outlined hidden">autorenew</span>
                     </button>
 
                     <div class="image-container relative w-full cursor-pointer" onclick="openProductModal(${productIndex})">
@@ -529,6 +529,7 @@ if (slider) {
         slider.scrollLeft = scrollLeft - walk;
     });
 }
+
 
 
 
