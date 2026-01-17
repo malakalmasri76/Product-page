@@ -173,10 +173,9 @@ function changeQtyByName(name, delta) {
   renderPage(currentPage, false);
 }
 
-// 5. عرض المنتجات (UI) مع خاصية الـ Flip
+// 5. عرض المنتجات (UI) مع خاصية الـ Flip والتنسيق المحسن للصور
 function renderPage(page, shouldScroll = true ) {
     currentPage = page;
-    // العودة لأعلى الصفحة عند التغيير
     if (shouldScroll) {
         window.scrollTo({ top: 0, behavior: "smooth" });
     }
@@ -189,17 +188,14 @@ function renderPage(page, shouldScroll = true ) {
 
     grid.innerHTML = products.map((product, index) => {
         const isOutOfStock = product["الحالة"] === "نفذت الكمية";
-        
-        // التحقق من وجود عرض
         const hasOffer = product["العرض"] && product["العرض"].toString().trim() !== "" && product["العرض"] !== "0";
-        
-        // تجهيز السعر الخام للإضافة للسلة
         const rawPrice = product["السعر"]?.toString().replace(/[^\d]/g, '') || "0";
         const cartItem = cart.find((item) => item.name === product["اسم المنتج"]);
         const quantityInCart = cartItem ? cartItem.qty : 0;
-
-        // حساب الفهرس الحقيقي للمنتج لاستخدامه في الـ Modal
         const productIndex = start + index;
+
+        // --- التعديل هنا: إضافة كلاس الرمادي إذا كان المنتج نافذاً ---
+        const imgStatusClass = isOutOfStock ? "out-of-stock-mode" : "";
 
         return `
         <div class="product-card-container">
@@ -213,7 +209,11 @@ function renderPage(page, shouldScroll = true ) {
                     </button>
 
                     <div class="image-container relative w-full cursor-pointer" onclick="openProductModal(${productIndex})">
-                        <img src="${fixImageUrl(product["الصورة"])}" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                        
+                        <div class="image-bg-blur" style="background-image: url('${fixImageUrl(product["الصورة"])}')"></div>
+                        
+                        <img src="${fixImageUrl(product["الصورة"])}" class="main-product-img ${imgStatusClass}">
+                        
                         ${isOutOfStock ? `<div class="out-of-stock-badge">نفذت الكمية</div>` : ""}
                     </div>
 
@@ -239,30 +239,24 @@ function renderPage(page, shouldScroll = true ) {
                         </div>
                         
                         <div class="mt-auto space-y-1 text-[13px]">
+                            <div class="flex justify-between border-b border-gray-50 pb-0.5">
+                                <span class="text-red-700 font-bold">السعر:</span>
+                                <span class="text-red-700 font-bold">${globalFormatPrice(product["السعر"])}</span>
+                            </div>
                             ${hasOffer ? `
-                                <div class="flex justify-between border-b border-gray-50 pb-0.5">
-                                    <span class="text-red-700 font-bold">السعر:</span>
-                                    <span class="text-red-700 font-bold">${globalFormatPrice(product["السعر"])}</span>
-                                </div>
                                 <div class="flex justify-between border-b border-gray-50 pb-0.5">
                                     <span class="text-slate-700">العرض:</span>
                                     <span class="text-slate-700">${product["العرض"]}</span>
                                 </div>
-                                <div class="flex justify-between">
+                                <div class="flex justify-between border-b border-gray-50 pb-0.5">
                                     <span class="text-slate-700">بعد العرض:</span>
                                     <span class="text-slate-700">${globalFormatPrice(product["السعر بعد العرض"])}</span>
                                 </div>
-                            ` : `
-                                <div class="flex justify-between border-b border-gray-50 pb-0.5">
-                                    <span class="text-red-700 font-bold">السعر:</span>
-                                    <span class="text-red-700 font-bold">${globalFormatPrice(product["السعر"])}</span>
-                                </div>
-                            `}
+                            ` : ''}
                             <div class="flex justify-between border-b border-gray-50 pb-0.5">
-                                    <span class="text-slate-700">سعر الرف:</span>
-                        <span class="text-slate-700">${globalFormatPrice(product["سعر الرف"])}</span>
-                                </div>
-                            
+                                <span class="text-slate-700">سعر الرف:</span>
+                                <span class="text-slate-700">${globalFormatPrice(product["سعر الرف"])}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -272,7 +266,6 @@ function renderPage(page, shouldScroll = true ) {
                         class="absolute top-4 left-4 text-white/50 hover:text-white transition-colors">
                         <span class="material-icons-outlined">close</span>
                     </button>
-
                     <span class="material-icons-outlined text-yellow-400 text-4xl mb-3">stars</span>
                     <h3 class="text-[13px] font-bold mb-2 uppercase tracking-[0.2em] text-yellow-500/80">سعر الجملة</h3>
                     <div class="bg-white/10 w-full py-3 rounded-2xl border border-white/20 mb-4">
@@ -289,7 +282,6 @@ function renderPage(page, shouldScroll = true ) {
     }).join("");
     updatePaginationControls();
 }
-
 // 6. الأقسام والفلترة
 function createCategoryButtons() {
   const container = document.getElementById("categoryBar");
@@ -417,6 +409,9 @@ function openProductModal(index) {
     const quantityInCart = cartItem ? cartItem.qty : 0;
     const isOutOfStock = product["الحالة"] === "نفذت الكمية";
     const rawPrice = getRaw(product["السعر"]);
+
+    // تحديد كلاس اللون الرمادي للصورة داخل المودال
+    const modalImgClass = isOutOfStock ? "out-of-stock-mode" : "";
   
     content.style.maxWidth = "450px"; 
     content.style.width = "90%";
@@ -424,11 +419,18 @@ function openProductModal(index) {
 
     body.innerHTML = `
         <div class="flex flex-col">
-            <div class="relative w-full h-72 bg-gray-50 flex items-center justify-center border-b border-gray-100">
-                <img src="${fixImageUrl(product["الصورة"])}" class="w-full h-full object-contain p-4">
-                <button onclick="closeProductModal()" class="absolute top-4 right-4 bg-white/90 w-10 h-10 rounded-full flex items-center justify-center shadow-md">
+            <div class="relative w-full h-80 bg-gray-50 flex items-center justify-center border-b border-gray-100 overflow-hidden">
+                
+                <div class="image-bg-blur" style="background-image: url('${fixImageUrl(product["الصورة"])}')"></div>
+                
+                <img src="${fixImageUrl(product["الصورة"])}" 
+                     class="relative z-10 w-full h-full object-contain p-6 ${modalImgClass}">
+                
+                <button onclick="closeProductModal()" class="absolute top-4 right-4 bg-white/90 w-10 h-10 rounded-full flex items-center justify-center shadow-md z-30">
                     <span class="material-icons-outlined text-gray-600">close</span>
                 </button>
+
+                ${isOutOfStock ? `<div class="out-of-stock-badge">نفذت الكمية</div>` : ""}
             </div>
 
             <div class="p-6 text-right">
@@ -440,9 +442,9 @@ function openProductModal(index) {
                         <span class="text-red-700 text-lg">${globalFormatPrice(product["السعر"])}</span>
                     </div>
                     ${hasOffer ? `
-                    <div class="flex justify-between items-center mt-2 pt-2 border-t border-slate-200">
-                                    <span class="text-slate-800 font-bold text-sm">العرض:</span>
-                                    <span class="text-slate-800 text-xl">${product["العرض"]}</span>
+                        <div class="flex justify-between items-center mt-2 pt-2 border-t border-slate-200">
+                            <span class="text-slate-800 font-bold text-sm">العرض:</span>
+                            <span class="text-slate-800 text-xl">${product["العرض"]}</span>
                         </div>
                         <div class="flex justify-between items-center mt-2 pt-2 border-t border-slate-200">
                             <span class="text-slate-800 font-bold text-sm"> بعد العرض</span>
@@ -480,6 +482,13 @@ function openProductModal(index) {
             </div>
         </div>
     `;
+
+    modal.classList.remove('hidden');
+    setTimeout(() => {
+        content.classList.remove('scale-95', 'opacity-0');
+        content.classList.add('scale-100', 'opacity-100');
+    }, 10);
+}
 
     modal.classList.remove('hidden');
     setTimeout(() => {
@@ -529,6 +538,7 @@ if (slider) {
         slider.scrollLeft = scrollLeft - walk;
     });
 }
+
 
 
 
