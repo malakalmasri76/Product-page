@@ -124,7 +124,18 @@ body {
     pointer-events: none;
     white-space: nowrap;
 }
+.product-card-inner.is-flipped .card-front {
+    pointer-events: none;
+    visibility: hidden;
+    transition: visibility 0s 0.3s; /* تأخير الاختفاء حتى تنتهي نصف الحركة */
+}
 
+/* التأكد من أن الوجه الخلفي هو الذي يستقبل النقرات عند القلّب */
+.product-card-inner.is-flipped .card-back {
+    pointer-events: auto;
+    visibility: visible;
+    z-index: 50;
+}
 /* الكلاس الذي سيتم إضافته للصورة عبر الجافاسكربت */
 .out-of-stock-mode {
     filter: grayscale(1) brightness(0.7) !important; /* تحويل لرمادي وتعتيم */
@@ -273,6 +284,7 @@ header, .category-wrapper {
     border-top: 1px solid #f3f4f6; /* فاصل بسيط بين الهيدر والأزرار */
     width: 100%;
 }
+
 
 
 
