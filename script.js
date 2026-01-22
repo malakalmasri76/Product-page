@@ -450,13 +450,13 @@ function openProductModal(index) {
                     </div>
                     ${hasOffer ? `
                         <div class="flex justify-between items-center mt-2 pt-2 border-t border-slate-200">
-                            <span class="text-slate-800 font-bold text-sm">العرض:</span>
+                            <span class="text-slate-800 font-bold text-sm">العرض</span>
                             <span class="text-slate-800 text-xl">${product["العرض"]}</span>
                         </div>
-                         <div class="flex justify-between border-b border-gray-50 pb-0.5 animate-gentle-grow">
-                                    <span class="text-green-700 font-bold">بعد العرض:</span>
-                                    <span class="font-black text-green-700">${globalFormatPrice(product["السعر بعد العرض"])}</span>
-                                </div>
+                        <div class="flex justify-between items-center mt-2 pt-2 border-t border-slate-200 animate-gentle-grow">
+                            <span class="text-green-700 font-bold text-sm"> بعد العرض</span>
+                            <span class="text-green-700 text-xl">${globalFormatPrice(product["السعر بعد العرض"])}</span>
+                        </div>
                     ` : ''}
                 </div>
 
@@ -548,6 +548,7 @@ if (slider) {
         slider.scrollLeft = scrollLeft - walk;
     });
 }
+
 
 
 
