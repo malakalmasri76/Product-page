@@ -285,6 +285,15 @@ header, .category-wrapper {
     width: 100%;
 }
 
+@keyframes gentle-grow {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 0.8; }
+}
+
+.animate-gentle-grow {
+  animation: gentle-grow 2s ease-in-out infinite;
+  display: flex; /* لضمان بقاء العناصر على سطر واحد */
+}
 
 
 
