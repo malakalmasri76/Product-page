@@ -17,9 +17,18 @@ window.onload = function () {
     // استرجاع حالة "وضع الزبون" من الذاكرة وتطبيقها
     const savedStatus = localStorage.getItem("noShameStatus");
     const toggleInput = document.getElementById("noShameToggle");
+    
+    // --- التعديل هنا ---
+    const profitLabel = document.getElementById("profitLabel"); 
+
     if (savedStatus === "enabled" && toggleInput) {
         toggleInput.checked = true;
         document.body.classList.add("no-shame-active");
+        
+        // إذا كان الوضع مفعلاً، غير النص فوراً عند التحميل
+        if (profitLabel) {
+            profitLabel.innerText = "ربح الكرتون:";
+        }
     }
 };
 
