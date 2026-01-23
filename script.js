@@ -10,76 +10,87 @@ let currentCategory = "الكل";
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
 // 2. التحميل الأولي عند فتح الصفحة
-window.onload = loadDataFromSheet;
+window.onload = function() {
+    loadDataFromSheet();
+    
+    // استرجاع حالة "وضع الزبون" من الذاكرة وتطبيقها
+    const savedStatus = localStorage.getItem("noShameStatus");
+    const toggleInput = document.getElementById("noShameToggle");
+    if (savedStatus === "enabled" && toggleInput) {
+        toggleInput.checked = true;
+        document.body.classList.add("no-shame-active");
+    }
+};
 
 // دالة عالمية لتنظيف وتنسيق أي سعر
 function globalFormatPrice(value) {
-  if (!value || value === "0") return "0 د.ع";
+    if (!value || value === "0") return "0 د.ع";
 
-  // تحويل القيمة لنص
-  let str = value.toString();
+    // تحويل القيمة لنص
+    let str = value.toString();
 
-  // إذا كان هناك نقطة (مثل 7500.00)، نأخذ فقط ما قبل النقطة
-  if (str.includes('.')) {
-    str = str.split('.')[0];
-  }
+    // إذا كان هناك نقطة (مثل 7500.00)، نأخذ فقط ما قبل النقطة
+    if (str.includes('.')) {
+        str = str.split('.')[0];
+    }
 
-  // حذف أي شيء ليس رقماً (مثل £ أو الفواصل)
-  const digits = str.replace(/[^\d]/g, "");
+    // حذف أي شيء ليس رقماً (مثل £ أو الفواصل)
+    const digits = str.replace(/[^\d]/g, "");
 
-  if (!digits) return "---";
+    if (!digits) return "---";
 
-  // تحويل الرقم إلى تنسيق عراقي (مثلاً 7,500) وإضافة العملة
-  return Number(digits).toLocaleString('en-US') + " د.ع";
+    // تحويل الرقم إلى تنسيق عراقي (مثلاً 7,500) وإضافة العملة
+    return Number(digits).toLocaleString('en-US') + " د.ع";
 }
 
 async function loadDataFromSheet() {
-  Papa.parse(SHEET_URL, {
-    download: true,
-    header: true,
-    complete: function (results) {
-      let rawData = results.data.filter(
-        (row) => row["اسم المنتج"] && row["اسم المنتج"].trim() !== ""
-      );
+    Papa.parse(SHEET_URL, {
+        download: true,
+        header: true,
+        complete: function (results) {
+            let rawData = results.data.filter(
+                (row) => row["اسم المنتج"] && row["اسم المنتج"].trim() !== ""
+            );
 
-      // ترتيب: المتوفر أولاً ثم النافذ
-      rawData.sort((a, b) => {
-        const statusA = (a["الحالة"] || "").trim();
-        const statusB = (b["الحالة"] || "").trim();
-        if (statusA === "نفذت الكمية" && statusB !== "نفذت الكمية") return 1;
-        if (statusA !== "نفذت الكمية" && statusB === "نفذت الكمية") return -1;
-        return 0;
-      });
+            // ترتيب: المتوفر أولاً ثم النافذ
+            rawData.sort((a, b) => {
+                const statusA = (a["الحالة"] || "").trim();
+                const statusB = (b["الحالة"] || "").trim();
+                if (statusA === "نفذت الكمية" && statusB !== "نفذت الكمية") return 1;
+                if (statusA !== "نفذت الكمية" && statusB === "نفذت الكمية") return -1;
+                return 0;
+            });
 
-      allProducts = rawData;
-      filteredProducts = [...allProducts];
-      createCategoryButtons();
-      updateCart();
-      renderPage(1);
-    },
-  });
+            allProducts = rawData;
+            filteredProducts = [...allProducts];
+            createCategoryButtons();
+            updateCart();
+            renderPage(1);
+        },
+    });
 }
 
 // 3. وظائف السلة الأساسية
 function updateCart() {
-  localStorage.setItem("cart", JSON.stringify(cart));
-  const count = cart.reduce((sum, item) => sum + item.qty, 0);
+    localStorage.setItem("cart", JSON.stringify(cart));
+    const count = cart.reduce((sum, item) => sum + item.qty, 0);
 
-  if (document.getElementById("cartCount"))
-    document.getElementById("cartCount").innerText = count;
+    if (document.getElementById("cartCount"))
+        document.getElementById("cartCount").innerText = count;
 
-  const cartItems = document.getElementById("cartItems");
-  let total = 0;
+    const cartItems = document.getElementById("cartItems");
+    let total = 0;
 
-  if (!cartItems) return;
+    if (!cartItems) return;
 
-  if (cart.length === 0) {
-    cartItems.innerHTML = `<div class="text-center py-20 text-gray-400 text-sm italic">السلة فارغة حالياً</div>`;
-  } else {
-    cartItems.innerHTML = cart
-  .map((item, index) => {
-    total += item.price * item.qty;
-    return `
+    if (cart.length === 0) {
+        cartItems.innerHTML = `<div class="text-center py-20 text-gray-400 text-sm italic">السلة فارغة حالياً</div>`;
+    } else {
+        // داخل دالة updateCart
+        cartItems.innerHTML = cart
+            .map((item, index) => {
+                total += item.price * item.qty;
+                return `
       <div class="flex justify-between items-center border-b border-gray-100 pb-4 mb-4 gap-3">
           <div class="w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden">
               <img src="${item.image}" class="w-full h-full object-contain p-1">
@@ -96,28 +107,29 @@ function updateCart() {
               <button onclick="changeQty(${index}, -1)" class="w-6 h-6 bg-white shadow-sm rounded flex items-center justify-center text-zinc-800 font-bold">-</button>
           </div>
       </div>`;
-  })
-  .join("");
-  }
+            })
+            .join("");
+    }
 
-  const formattedTotal = globalFormatPrice(total);
-  if (document.getElementById("cartTotal"))
-    document.getElementById("cartTotal").innerText = formattedTotal;
+    const formattedTotal = globalFormatPrice(total);
+    if (document.getElementById("cartTotal"))
+        document.getElementById("cartTotal").innerText = formattedTotal;
 }
 
+
 function addToCart(name, price, imageUrl) {
-    const numericPrice = parseInt(price.toString().replace(/[^\d]/g, '')) || 0; 
-    
+    const numericPrice = parseInt(price.toString().replace(/[^\d]/g, '')) || 0;
+
     const item = cart.find((i) => i.name === name);
     if (item) {
         item.qty++;
     } else {
         // تخزين الاسم والسعر والصورة
-        cart.push({ 
-            name: name, 
-            price: numericPrice, 
-            qty: 1, 
-            image: imageUrl 
+        cart.push({
+            name: name,
+            price: numericPrice,
+            qty: 1,
+            image: imageUrl
         });
     }
     updateCart();
@@ -126,74 +138,98 @@ function addToCart(name, price, imageUrl) {
 
 // 4. وظائف الحذف والتأكيد (المودال)
 function clearFullCart() {
-  const modal = document.getElementById("confirmModal");
-  const box = document.getElementById("modalBox");
-  const overlay = document.getElementById("modalOverlay");
+    const modal = document.getElementById("confirmModal");
+    const box = document.getElementById("modalBox");
+    const overlay = document.getElementById("modalOverlay");
 
-  modal.classList.remove("invisible");
-  setTimeout(() => {
-    overlay.classList.add("opacity-100");
-    box.classList.remove("scale-90", "opacity-0");
-    box.classList.add("scale-100", "opacity-100");
-  }, 10);
+    modal.classList.remove("invisible");
+    setTimeout(() => {
+        overlay.classList.add("opacity-100");
+        box.classList.remove("scale-90", "opacity-0");
+        box.classList.add("scale-100", "opacity-100");
+    }, 10);
 }
 
 function closeConfirmModal() {
-  const modal = document.getElementById("confirmModal");
-  const box = document.getElementById("modalBox");
-  const overlay = document.getElementById("modalOverlay");
+    const modal = document.getElementById("confirmModal");
+    const box = document.getElementById("modalBox");
+    const overlay = document.getElementById("modalOverlay");
 
-  overlay.classList.remove("opacity-100");
-  box.classList.replace("scale-100", "scale-95");
-  box.classList.replace("opacity-100", "opacity-0");
+    overlay.classList.remove("opacity-100");
+    box.classList.replace("scale-100", "scale-95");
+    box.classList.replace("opacity-100", "opacity-0");
 
-  setTimeout(() => {
-    modal.classList.add("invisible");
-    box.classList.remove("scale-95");
-    box.classList.add("scale-90");
-  }, 300);
+    setTimeout(() => {
+        modal.classList.add("invisible");
+        box.classList.remove("scale-95");
+        box.classList.add("scale-90");
+    }, 300);
 }
 
 function executeClearCart() {
-  cart = [];
-  updateCart();
-  renderPage(currentPage);
-  closeConfirmModal();
-  setTimeout(() => toggleCart(), 500);
+    cart = [];
+    updateCart();
+    renderPage(currentPage);
+    closeConfirmModal();
+    setTimeout(() => toggleCart(), 500);
 }
 
 function changeQty(index, delta) {
-  cart[index].qty += delta;
-  if (cart[index].qty <= 0) cart.splice(index, 1);
-  updateCart();
-  renderPage(currentPage, false);
+    cart[index].qty += delta;
+    if (cart[index].qty <= 0) cart.splice(index, 1);
+    updateCart();
+    renderPage(currentPage, false);
 }
 
 function changeQtyByName(name, delta) {
-  const index = cart.findIndex((item) => item.name === name);
-  if (index !== -1) {
-    cart[index].qty += delta;
-    if (cart[index].qty <= 0) cart.splice(index, 1);
-  }
-  updateCart();
-  renderPage(currentPage, false);
+    const index = cart.findIndex((item) => item.name === name);
+    if (index !== -1) {
+        cart[index].qty += delta;
+        if (cart[index].qty <= 0) cart.splice(index, 1);
+    }
+    updateCart();
+    renderPage(currentPage, false);
 }
 
 // 5. عرض المنتجات (UI) مع خاصية الـ Flip
-function renderPage(page, shouldScroll = true ) {
+function renderPage(page, shouldScroll = true) {
     currentPage = page;
     if (shouldScroll) {
         window.scrollTo({ top: 0, behavior: "smooth" });
     }
-    
+
     const grid = document.getElementById("productsGrid");
     if (!grid) return;
-    
+
     const start = (page - 1) * itemsPerPage;
     const products = filteredProducts.slice(start, start + itemsPerPage);
 
     grid.innerHTML = products.map((product, index) => {
         const isOutOfStock = product["الحالة"] === "نفذت الكمية";
+        // 1. تعريف الكلمات والألوان المرتبطة بها
+        const badgeMap = {
+            "الاعلى ربحاً": "badge-green",
+            "الاكثر ربحاً": "badge-green",
+            "الاكثر مبيعاً": "badge-green",
+            "الاكثر طلباً": "badge-green",
+            "الاسرع بيعاً": "badge-green",
+            "موصى به": "badge-yellow",
+            "عرض خاص": "badge-red",
+            "قريب النفاذ": "badge-red",
+            "كمية محدودة": "badge-red",
+            "جديد الان": "badge-orange"
+        };
+        // 2. داخل دالة renderPage وتحديداً عند فحص الحالة (statusLabel)
+        const statusLabel = (product["الحالة"] || "").trim();
+        let badgeHTML = "";
+
+        // إذا كانت الكلمة موجودة في القائمة، ارسم الليبل باللون المخصص لها
+        if (badgeMap[statusLabel]) {
+            const colorClass = badgeMap[statusLabel];
+            badgeHTML = `<div class="product-badge ${colorClass}">${statusLabel}</div>`;
+        }
+
+        // 3. تأكد من وضع المتغير badgeHTML داخل الـ image-container كما فعلنا سابقاً
         const hasOffer = product["العرض"] && product["العرض"].toString().trim() !== "" && product["العرض"] !== "0";
         const rawPrice = product["السعر"]?.toString().replace(/[^\d]/g, '') || "0";
         const cartItem = cart.find((item) => item.name === product["اسم المنتج"]);
@@ -207,10 +243,9 @@ function renderPage(page, shouldScroll = true ) {
         return `
         <div class="product-card-container">
             <div class="product-card-inner" id="card-${productIndex}">
-                
                 <div class="card-front bg-white border border-slate-100 shadow-sm rounded-3xl overflow-hidden flex flex-col">
-                    
-                    <button onclick="event.stopPropagation(); document.getElementById('card-${productIndex}').classList.toggle('is-flipped')" 
+                  ${badgeHTML}
+                <button onclick="event.stopPropagation(); document.getElementById('card-${productIndex}').classList.toggle('is-flipped')" 
                         class="absolute top-2 left-2 z-20 w-8 h-8 flex items-center justify-center">
                         <span class="material-icons-outlined hidden">autorenew</span>
                     </button>
@@ -218,17 +253,21 @@ function renderPage(page, shouldScroll = true ) {
                     <div class="image-container relative w-full cursor-pointer" onclick="openProductModal(${productIndex})">
                         
                         <div class="image-bg-blur" style="background-image: url('${productImage}')"></div>
-                        
+                      
                         <img src="${productImage}" class="main-product-img ${imgStatusClass}">
                         
                         ${isOutOfStock ? `<div class="out-of-stock-badge">نفذت الكمية</div>` : ""}
                     </div>
+                    
 
                     <div class="p-4 text-right flex-grow flex flex-col">
                         <div class="flex items-start justify-between gap-2 mb-3 min-h-[40px]">
-                            <h3 class="font-bold text-slate-800 text-[14px] leading-tight flex-grow cursor-pointer" onclick="openProductModal(${productIndex})">
-                                ${product["اسم المنتج"]}
-                            </h3>
+                            <div class="flex flex-col flex-grow">
+                        <h3 class="font-bold text-slate-800 text-[14px] leading-tight cursor-pointer" onclick="openProductModal(${productIndex})">
+                            ${product["اسم المنتج"]}
+                        </h3>
+                    </div>
+                            
                             <div onclick="event.stopPropagation()">
                                 ${quantityInCart === 0 ? `
                                     <button onclick="addToCart('${product["اسم المنتج"]}', '${rawPrice}', '${productImage}')" 
@@ -251,11 +290,11 @@ function renderPage(page, shouldScroll = true ) {
                                 <span class="text-red-700 font-bold">${globalFormatPrice(product["السعر"])}</span>
                             </div>
                             ${hasOffer ? `
-                                <div class="flex justify-between border-b border-gray-50 pb-0.5">
+                                <div class="sale flex justify-between border-b border-gray-50 pb-0.5">
                                     <span class="text-slate-700">العرض:</span>
                                     <span class="text-slate-700">${product["العرض"]}</span>
                                 </div>
-                                 <div class="flex justify-between border-b border-gray-50 pb-0.5 animate-gentle-grow">
+                                <div class="after-sale flex justify-between border-b border-gray-50 pb-0.5 animate-gentle-grow">
                                     <span class="text-green-700 font-bold">بعد العرض:</span>
                                     <span class="font-black text-green-700">${globalFormatPrice(product["السعر بعد العرض"])}</span>
                                 </div>
@@ -268,8 +307,8 @@ function renderPage(page, shouldScroll = true ) {
                     </div>
                 </div>
 
-                <div class="card-back shadow-2xl rounded-3xl flex flex-col items-center justify-center p-6 bg-slate-900 text-white text-center">
-                    <button onclick="document.getElementById('card-${productIndex}').classList.toggle('is-flipped')" 
+                <div class="card-back shadow-2xl rounded-3xl flex flex-col items-center justify-center p-6 bg-slate-900 text-white text-center" onclick="event.stopPropagation()">
+                    <button onclick="event.stopPropagation(); document.getElementById('card-${productIndex}').classList.toggle('is-flipped')"
                         class="absolute top-4 left-4 text-white/50 hover:text-white transition-colors">
                         <span class="material-icons-outlined">close</span>
                     </button>
@@ -289,154 +328,148 @@ function renderPage(page, shouldScroll = true ) {
     }).join("");
     updatePaginationControls();
 }
+
 // 6. الأقسام والفلترة
 function createCategoryButtons() {
-  const container = document.getElementById("categoryBar");
-  if (!container) return;
+    const container = document.getElementById("categoryBar");
+    if (!container) return;
 
-  const uniqueCategories = [
-    "الكل",
-    ...new Set(allProducts.map((p) => p["الفئة"]).filter((c) => c)),
-  ];
+    const uniqueCategories = [
+        "الكل",
+        ...new Set(allProducts.map((p) => p["الفئة"]).filter((c) => c)),
+    ];
 
-  container.innerHTML = uniqueCategories
-    .map(
-      (cat) => `
+    container.innerHTML = uniqueCategories
+        .map(
+            (cat) => `
         <button onclick="setCategory('${cat}')" 
             class="category-btn border transition-all 
-            ${
-              currentCategory === cat
-                ? "bg-yellow-400 text-white border-yellow-400 shadow-md"
-                : "bg-yellow-50 text-slate-600 border-slate-200"
-            }">
+            ${currentCategory === cat
+                    ? "bg-yellow-400 text-white border-yellow-400 shadow-md"
+                    : "bg-yellow-50 text-slate-600 border-slate-200"
+                }">
             ${cat}
         </button>`
-    )
-    .join("");
+        )
+        .join("");
 }
 function setCategory(cat) {
-  currentCategory = cat;
-  createCategoryButtons(); // لإعادة رسم الأزرار وتغيير اللون الأخضر للزر المختار
-  filterProducts();
+    currentCategory = cat;
+    createCategoryButtons(); // لإعادة رسم الأزرار وتغيير اللون الأخضر للزر المختار
+    filterProducts();
 }
 
 function filterProducts() {
-  const searchTerm = document.getElementById("searchInput").value.toLowerCase();
-  filteredProducts = allProducts.filter((product) => {
-    const name = (product["اسم المنتج"] || "").toLowerCase();
-    const matchesCategory =
-      currentCategory === "الكل" || product["الفئة"] === currentCategory;
-    const matchesSearch = name.includes(searchTerm);
-    return matchesCategory && matchesSearch;
-  });
-  renderPage(1);
+    const searchTerm = document.getElementById("searchInput").value.toLowerCase();
+    filteredProducts = allProducts.filter((product) => {
+        const name = (product["اسم المنتج"] || "").toLowerCase();
+        const matchesCategory =
+            currentCategory === "الكل" || product["الفئة"] === currentCategory;
+        const matchesSearch = name.includes(searchTerm);
+        return matchesCategory && matchesSearch;
+    });
+    renderPage(1);
 }
 
 // 8. وظائف مساعدة
 function toggleCart() {
-  const drawer = document.getElementById("cartDrawer");
-  const content = document.getElementById("cartContent");
-  const overlay = document.getElementById("cartOverlay");
-  if (drawer.classList.contains("invisible")) {
-    drawer.classList.remove("invisible");
-    overlay.classList.add("opacity-100");
-    content.classList.remove("-translate-x-full");
-  } else {
-    overlay.classList.remove("opacity-100");
-    content.classList.add("-translate-x-full");
-    setTimeout(() => drawer.classList.add("invisible"), 300);
-  }
+    const drawer = document.getElementById("cartDrawer");
+    const content = document.getElementById("cartContent");
+    const overlay = document.getElementById("cartOverlay");
+    if (drawer.classList.contains("invisible")) {
+        drawer.classList.remove("invisible");
+        overlay.classList.add("opacity-100");
+        content.classList.remove("-translate-x-full");
+    } else {
+        overlay.classList.remove("opacity-100");
+        content.classList.add("-translate-x-full");
+        setTimeout(() => drawer.classList.add("invisible"), 300);
+    }
 }
 
 function updatePaginationControls() {
-  const container = document.getElementById("paginationButtons");
-  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
-  
-  if (!container || totalPages <= 1) {
-    if (container) container.innerHTML = "";
-    return;
-  }
+    const container = document.getElementById("paginationButtons");
+    const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
 
-  // زر الصفحة السابقة
-  let html = `<button onclick="changePage(${currentPage - 1})" ${
-    currentPage === 1 ? "disabled" : ""
-  } class="p-2 rounded-xl border bg-white disabled:opacity-30">
+    if (!container || totalPages <= 1) {
+        if (container) container.innerHTML = "";
+        return;
+    }
+
+    // زر الصفحة السابقة
+    let html = `<button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? "disabled" : ""
+        } class="p-2 rounded-xl border bg-white disabled:opacity-30">
         <span class="material-icons-outlined">chevron_right</span>
     </button>`;
 
-  // أرقام الصفحات
-  for (let i = 1; i <= totalPages; i++) {
-    // نتركها كما هي (i) لأننا نريد التمرير للأعلى عند الانتقال لصفحة جديدة
-    html += `<button onclick="renderPage(${i}, true)" class="w-10 h-10 rounded-xl font-bold ${
-      i === currentPage ? "bg-yellow-400 text-white" : "bg-white text-slate-400"
-    }">${i}</button>`;
-  }
+    // أرقام الصفحات
+    for (let i = 1; i <= totalPages; i++) {
+        // نتركها كما هي (i) لأننا نريد التمرير للأعلى عند الانتقال لصفحة جديدة
+        html += `<button onclick="renderPage(${i}, true)" class="w-10 h-10 rounded-xl font-bold ${i === currentPage ? "bg-yellow-400 text-white" : "bg-white text-slate-400"
+            }">${i}</button>`;
+    }
 
-  // زر الصفحة التالية
-  html += `<button onclick="changePage(${currentPage + 1})" ${
-    currentPage === totalPages ? "disabled" : ""
-  } class="p-2 rounded-xl border bg-white disabled:opacity-30">
+    // زر الصفحة التالية
+    html += `<button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? "disabled" : ""
+        } class="p-2 rounded-xl border bg-white disabled:opacity-30">
         <span class="material-icons-outlined">chevron_left</span>
     </button>`;
 
-  container.innerHTML = html;
+    container.innerHTML = html;
 }
 
 function changePage(newPage) {
-  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
-  if (newPage >= 1 && newPage <= totalPages) {
-    renderPage(newPage, true);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
+    const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+    if (newPage >= 1 && newPage <= totalPages) {
+        renderPage(newPage, true);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
 }
 
 function fixImageUrl(url) {
-  if (!url) return "https://via.placeholder.com/300?text=No+Image";
-  let u = url.trim();
-  if (u.includes("drive.google.com")) {
-    let id = u.split("/d/")[1]?.split("/")[0] || u.split("id=")[1];
-    return `https://drive.google.com/uc?export=view&id=${id}`;
-  }
-  return u;
+    if (!url) return "https://via.placeholder.com/300?text=No+Image";
+    let u = url.trim();
+    if (u.includes("drive.google.com")) {
+        let id = u.split("/d/")[1]?.split("/")[0] || u.split("id=")[1];
+        return `https://drive.google.com/uc?export=view&id=${id}`;
+    }
+    return u;
 }
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker
-    .register("./sw.js")
-    .then(() => console.log("Service Worker Registered"));
+    navigator.serviceWorker
+        .register("./sw.js")
+        .then(() => console.log("Service Worker Registered"));
 }
 function openProductModal(index) {
     const product = filteredProducts[index];
     const modal = document.getElementById('productModal');
     const content = document.getElementById('modalContent');
     const body = document.getElementById('modalBody');
-  
+
     const hasOffer = product["العرض"] && product["العرض"] !== "0";
     const getRaw = (val) => val ? val.toString().split('.')[0].replace(/[^\d]/g, '') : "0";
     const cartItem = cart.find((item) => item.name === product["اسم المنتج"]);
     const quantityInCart = cartItem ? cartItem.qty : 0;
     const isOutOfStock = product["الحالة"] === "نفذت الكمية";
-    const rawPrice = getRaw(product["السعر"]);
 
-    // تحديد كلاس اللون الرمادي للصورة داخل المودال
+    // جلب السعر النهائي (إذا كان هناك عرض نأخذ سعر العرض، وإلا السعر العادي)
+    const finalPrice = hasOffer ? getRaw(product["السعر بعد العرض"]) : getRaw(product["السعر"]);
+    const piecesCount = parseInt(product["العدد"]) || 1;
+
     const modalImgClass = isOutOfStock ? "out-of-stock-mode" : "";
-  
-    content.style.maxWidth = "450px"; 
+
+    content.style.maxWidth = "450px";
     content.style.width = "90%";
     content.className = "bg-white rounded-[35px] overflow-hidden shadow-2xl transform transition-all duration-300";
 
     body.innerHTML = `
         <div class="flex flex-col">
             <div class="relative w-full h-80 bg-gray-50 flex items-center justify-center border-b border-gray-100 overflow-hidden">
-                
                 <div class="image-bg-blur" style="background-image: url('${fixImageUrl(product["الصورة"])}')"></div>
-                
-                <img src="${fixImageUrl(product["الصورة"])}" 
-                     class="relative z-10 w-full h-full object-contain p-6 ${modalImgClass}">
-                
+                <img src="${fixImageUrl(product["الصورة"])}" class="relative z-10 w-full h-full object-contain p-6 ${modalImgClass}">
                 <button onclick="closeProductModal()" class="absolute top-4 right-4 bg-white/90 w-10 h-10 rounded-full flex items-center justify-center shadow-md z-30">
                     <span class="material-icons-outlined text-gray-600">close</span>
                 </button>
-
                 ${isOutOfStock ? `<div class="out-of-stock-badge">نفذت الكمية</div>` : ""}
             </div>
 
@@ -449,7 +482,7 @@ function openProductModal(index) {
                         <span class="text-red-700 text-lg">${globalFormatPrice(product["السعر"])}</span>
                     </div>
                     ${hasOffer ? `
-                        <div class="flex justify-between items-center mt-2 pt-2 border-t border-slate-200">
+                        <div class="sale flex justify-between items-center mt-2 pt-2 border-t border-slate-200">
                             <span class="text-slate-800 font-bold text-sm">العرض</span>
                             <span class="text-slate-800 text-xl">${product["العرض"]}</span>
                         </div>
@@ -471,20 +504,28 @@ function openProductModal(index) {
                     </div>
                 </div>
 
-                <div class="flex items-center justify-center">
-                    ${quantityInCart === 0 ? `
-                        <button onclick="addToCart('${product["اسم المنتج"]}', '${rawPrice}'); openProductModal(${index})" 
-                            class="w-full h-14 bg-yellow-400 text-white rounded-2xl font-bold flex items-center justify-center gap-2 active:scale-95 transition-transform ${isOutOfStock ? 'opacity-30 pointer-events-none' : ''}">
-                            <span class="material-icons-outlined">add_shopping_cart</span>
-                            إضافة للسلة
-                        </button>
-                    ` : `
-                        <div class="flex items-center justify-between w-full bg-yellow-200 p-2 rounded-2xl border border-gray-200 h-14">
-                            <button onclick="changeQtyByName('${product["اسم المنتج"]}', 1); openProductModal(${index})" class="w-10 h-10 bg-gray-100 rounded-xl shadow-sm font-bold text-xl">+</button>
-                            <span class="text-lg font-black">${quantityInCart}</span>
-                            <button onclick="changeQtyByName('${product["اسم المنتج"]}', -1); openProductModal(${index})" class="w-10 h-10 bg-gray-100 rounded-xl shadow-sm font-bold text-xl">-</button>
-                        </div>
-                    `}
+                <div class="flex gap-3 mt-6">
+                    <div class="flex-1">
+                        ${quantityInCart === 0 ? `
+                            <button onclick="addToCart('${product["اسم المنتج"]}', '${getRaw(product["السعر"])}'); openProductModal(${index})" 
+                                class="w-full h-14 bg-yellow-400 text-white rounded-2xl font-bold flex items-center justify-center gap-2 active:scale-95 transition-transform ${isOutOfStock ? 'opacity-30 pointer-events-none' : ''}">
+                                <span class="material-icons-outlined">add_shopping_cart</span>
+                                إضافة
+                            </button>
+                        ` : `
+                            <div class="flex items-center justify-between w-full bg-yellow-200 p-2 rounded-2xl border border-gray-200 h-14">
+                                <button onclick="changeQtyByName('${product["اسم المنتج"]}', 1); openProductModal(${index})" class="w-10 h-10 bg-gray-100 rounded-xl shadow-sm font-bold text-xl">+</button>
+                                <span class="text-lg font-black">${quantityInCart}</span>
+                                <button onclick="changeQtyByName('${product["اسم المنتج"]}', -1); openProductModal(${index})" class="w-10 h-10 bg-gray-100 rounded-xl shadow-sm font-bold text-xl">-</button>
+                            </div>
+                        `}
+                    </div>
+                    
+                    <button onclick="startProfitCalc(${index})" 
+    class="flex-1 w-full h-14 bg-green-500 text-white rounded-2xl font-bold flex items-center justify-center gap-2 active:scale-95 transition-transform">
+    <span class="material-icons-outlined">calculate</span>
+    <span class="font-bold">حاسبة الأرباح</span>
+</button>
                 </div>
             </div>
         </div>
@@ -504,16 +545,15 @@ function closeProductModal() {
     setTimeout(() => modal.classList.add('hidden'), 300);
 }
 // ميزة الإغلاق عند النقر خارج النافذة
-window.addEventListener('click', function(event) {
+window.addEventListener('click', function (event) {
     const modal = document.getElementById('productModal');
     const modalContent = document.getElementById('modalContent');
-    
+
     // إذا كان المودال مفتوحاً (ليس مخفياً) وكان النقر على المودال نفسه (الخلفية) وليس المحتوى
     if (event.target === modal) {
         closeProductModal();
     }
 });
-
 // احذفي كل هذا الجزء من البداية للنهاية
 const slider = document.getElementById('categoryBar');
 let isDown = false;
@@ -526,7 +566,7 @@ if (slider) {
         slider.style.cursor = 'grabbing';
         startX = e.pageX - slider.offsetLeft;
         scrollLeft = slider.scrollLeft;
-        slider.style.scrollBehavior = 'auto'; 
+        slider.style.scrollBehavior = 'auto';
     });
 
     slider.addEventListener('mouseleave', () => {
@@ -544,11 +584,88 @@ if (slider) {
         if (!isDown) return;
         e.preventDefault();
         const x = e.pageX - slider.offsetLeft;
-        const walk = (x - startX) * 1.5; 
+        const walk = (x - startX) * 1.5;
         slider.scrollLeft = scrollLeft - walk;
     });
 }
+function startProfitCalc(productIndex) {
+    const product = filteredProducts[productIndex];
 
+    // تأكد من جلب العناصر من الـ HTML
+    const modal = document.getElementById('profitModal');
+    const content = document.getElementById('profitContent');
+    const input = document.getElementById('userSellPrice');
+    const calcBtn = document.getElementById('calcBtn');
+    const resultDiv = document.getElementById('profitResult');
+    const calcActionButtons = document.getElementById('calcActionButtons');
+    const addToCartBtn = document.getElementById('addToCartFromCalc');
 
+    const shelfPriceRaw = product["سعر الرف"] ? product["سعر الرف"].toString().replace(/[^\d]/g, '') : "";
+    input.value = shelfPriceRaw;
+    resultDiv.classList.add('hidden');
+    calcActionButtons.classList.remove('hidden');
+    modal.classList.remove('hidden');
 
+    setTimeout(() => {
+        content.classList.replace('scale-95', 'scale-100');
+        content.classList.replace('opacity-0', 'opacity-100');
+    }, 10);
 
+    // 2. كود زر "احسب الآن"
+    calcBtn.onclick = function () {
+        const sellPrice = parseFloat(input.value);
+        if (!sellPrice || sellPrice <= 0) {
+            alert("يرجى إدخال سعر البيع أولاً");
+            return;
+        }
+
+        // جلب البيانات من المنتج المختار
+        const pieces = parseInt(product["العدد"]) || 1;
+        const mainPrice = parseFloat(product["السعر"]) || 0;
+        const offerPrice = parseFloat(product["السعر بعد العرض"]) || mainPrice;
+
+        // تطبيق المعادلات
+        const pBefore = (sellPrice * pieces) - mainPrice;
+        const pAfter = (sellPrice * pieces) - offerPrice;
+
+        // عرض النتائج
+        document.getElementById('profitBeforeOffer').innerText = Math.round(pBefore).toLocaleString() + " د.ع";
+        document.getElementById('profitAfterOffer').innerText = Math.round(pAfter).toLocaleString() + " د.ع";
+
+        // إظهار النتائج وإخفاء زر الحساب الأصلي حسب مخطط التدفق
+        resultDiv.classList.remove('hidden');
+        calcActionButtons.classList.add('hidden');
+    };
+
+    // 3. كود الإضافة للسلة من داخل الحاسبة
+    addToCartBtn.onclick = function () {
+        addToCart(product["اسم المنتج"], product["السعر"], fixImageUrl(product["الصورة"]));
+        closeProfitModal();
+    };
+
+    // 4. إخفاء النتائج إذا قام المستخدم بتعديل السعر (نقطة 6 في المخطط)
+    input.oninput = function () {
+        resultDiv.classList.add('hidden');
+        calcActionButtons.classList.remove('hidden');
+    };
+}
+
+function closeProfitModal() {
+    const modal = document.getElementById('profitModal');
+    const content = document.getElementById('profitContent');
+    content.classList.replace('scale-100', 'scale-95');
+    content.classList.replace('opacity-100', 'opacity-0');
+    setTimeout(() => modal.classList.add('hidden'), 300);
+}
+function applyNoShameMode() {
+    const isChecked = document.getElementById('noShameToggle').checked;
+    const body = document.body;
+
+    if (isChecked) {
+        body.classList.add('no-shame-active');
+        localStorage.setItem('noShameStatus', 'enabled');
+    } else {
+        body.classList.remove('no-shame-active');
+        localStorage.setItem('noShameStatus', 'disabled');
+    }
+}
