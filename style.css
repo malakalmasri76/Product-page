@@ -1,293 +1,316 @@
 /* 1. المتغيرات والخطوط */
 :root {
-    --primary-color: #f7c300;
-    --secondary-color: #4a4a4a;
-    --bg-light: #f8fafc;
+  --primary-color: #f7c300;
+  --secondary-color: #4a4a4a;
+  --bg-light: #f8fafc;
 }
 
 body {
-    font-family: 'Cairo', sans-serif;
-    background-color: var(--bg-light);
-    color: var(--secondary-color);
-    scroll-behavior: smooth;
+  font-family: "Cairo", sans-serif;
+  background-color: var(--bg-light);
+  color: var(--secondary-color);
+  scroll-behavior: smooth;
 }
 
 /* 2. حاوية الكارد (خاصية الـ Flip) */
 .product-card-container {
-    perspective: 1000px;
-    height: 500px; /* طول ثابت لضمان تناسق الشبكة */
-    margin-bottom: 1rem;
-    user-select: none; /* منع تحديد النص عند النقر المزدوج */
+  position: relative;
+  perspective: 1000px;
+  height: 440px; /* طول ثابت لضمان تناسق الشبكة */
+  margin-bottom: 1rem;
+  user-select: none; /* منع تحديد النص عند النقر المزدوج */
 }
 
 .product-card-inner {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-    transform-style: preserve-3d;
-    cursor: pointer;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-style: preserve-3d;
+  cursor: pointer;
 }
 
 .product-card-inner.is-flipped {
-    transform: rotateY(180deg);
+  transform: rotateY(180deg);
 }
 
 /* تأكدي أن الأوجه لها نفس الارتفاع تماماً */
-.card-front, .card-back {
-    backface-visibility: hidden;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+.card-front,
+.card-back {
+  backface-visibility: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 
 .card-back {
-    transform: rotateY(180deg);
+  transform: rotateY(180deg);
 }
 
 /* الوجه الأمامي */
 .card-front {
-    background: white;
-    border: 1px solid #f1f5f9;
+  background: white;
+  border: 1px solid #f1f5f9;
 }
 /* تنسيق سطر العنوان والزر */
 .card-front h3 {
-    display: -webkit-box;
-    
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    line-height: 1.2;
+  display: -webkit-box;
+
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.2;
 }
 /* تنسيق الصور لضمان ظهورها كاملة */
 .image-container {
-    width: 100%;
-    height: 300px; 
-    overflow: hidden;
-    position: relative;
-    background-color: #f8fafc;
+  width: 100%;
+  height: 500px;
+  overflow: hidden;
+  position: relative;
+  background-color: #f8fafc;
+  z-index: 1;
 }
 .card-front img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover; 
-    object-position: center;
-    transition: transform 0.6s cubic-bezier(0.33, 1, 0.68, 1);
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 0.6s cubic-bezier(0.33, 1, 0.68, 1);
 }
 .product-card-inner:hover .card-front img {
-    transform: scale(1.15); /* تكبير بنسبة 15% */
+  transform: scale(1.15); /* تكبير بنسبة 15% */
 }
 .image-container::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(to bottom, transparent 80%, rgba(0,0,0,0.02));
-    pointer-events: none;
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, transparent 80%, rgba(0, 0, 0, 0.02));
+  pointer-events: none;
 }
 /* تحسين شكل العداد الصغير عندما يظهر مكان الزر */
 .card-front .flex.items-center.gap-1 {
-    min-width: 65px; /* ضمان عرض كافٍ للعداد */
+  min-width: 65px; /* ضمان عرض كافٍ للعداد */
 }
 
 /* الوجه الخلفي */
 .card-back {
-    background: #111827; /* لون ليلي فخم */
-    color: white;
-    transform: rotateY(180deg);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 2rem;
-    text-align: center;
+  background: #111827; /* لون ليلي فخم */
+  color: white;
+  transform: rotateY(180deg);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  text-align: center;
 }
-
-/* 3. حالة نفاد الكمية */
-.out-of-stock-badge {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) rotate(-15deg);
-    background-color: rgba(220, 38, 38, 0.95);
-    color: white;
-    padding: 8px 20px;
-    border-radius: 10px;
-    font-weight: 900;
-    font-size: 1rem;
-    z-index: 50; /* تأكدي أنها أعلى قيمة في الكارت */
-    border: 3px solid white;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-    pointer-events: none;
-    white-space: nowrap;
-}
+/* منع النقرات من الوصول للوجه الأمامي عندما يكون مخفياً */
 .product-card-inner.is-flipped .card-front {
-    pointer-events: none;
-    visibility: hidden;
-    transition: visibility 0s 0.3s; /* تأخير الاختفاء حتى تنتهي نصف الحركة */
+  pointer-events: none;
+  visibility: hidden;
+  transition: visibility 0s 0.3s; /* تأخير الاختفاء حتى تنتهي نصف الحركة */
 }
 
 /* التأكد من أن الوجه الخلفي هو الذي يستقبل النقرات عند القلّب */
 .product-card-inner.is-flipped .card-back {
-    pointer-events: auto;
-    visibility: visible;
-    z-index: 50;
+  pointer-events: auto;
+  visibility: visible;
+  z-index: 50;
 }
+/* 3. حالة نفاد الكمية */
+.out-of-stock-badge {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-15deg);
+  background-color: rgba(220, 38, 38, 0.95);
+  color: white;
+  padding: 8px 20px;
+  border-radius: 10px;
+  font-weight: 900;
+  font-size: 1rem;
+  z-index: 50; /* تأكدي أنها أعلى قيمة في الكارت */
+  border: 3px solid white;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
 /* الكلاس الذي سيتم إضافته للصورة عبر الجافاسكربت */
 .out-of-stock-mode {
-    filter: grayscale(1) brightness(0.7) !important; /* تحويل لرمادي وتعتيم */
-    opacity: 0.7;
-    transition: all 0.4s ease;
+  filter: grayscale(1) brightness(0.7) !important; /* تحويل لرمادي وتعتيم */
+  opacity: 0.7;
+  transition: all 0.4s ease;
 }
 
 /* لمنع أي تأثيرات حركية على كرت المنتج النافذ (اختياري) */
 .product-card-inner.is-out-of-stock:hover .card-front img {
-    transform: scale(1); /* نمنع التكبير إذا نفدت الكمية */
+  transform: scale(1); /* نمنع التكبير إذا نفدت الكمية */
 }
-
 /* 4. السلة الجانبية (Drawer) */
 #cartDrawer {
-    transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;
 }
 
 #cartItems::-webkit-scrollbar {
-    width: 4px;
+  width: 4px;
 }
 
 #cartItems::-webkit-scrollbar-thumb {
-    background: #e2e8f0;
-    border-radius: 10px;
+  background: #e2e8f0;
+  border-radius: 10px;
 }
 
 /* 5. المودال (نافذة التأكيد) */
 #confirmModal {
-    transition: visibility 0.3s;
+  transition: visibility 0.3s;
 }
 
 @keyframes pulseIcon {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 .bg-red-50 span {
-    animation: pulseIcon 2s infinite;
+  animation: pulseIcon 2s infinite;
 }
 
 /* 6. تأثيرات الأزرار والحركة */
 button {
-    transition: all 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 button:active {
-    transform: scale(0.95);
+  transform: scale(0.95);
 }
 
 @keyframes slideUp {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 #cartItems > div {
-    animation: slideUp 0.3s ease forwards;
+  animation: slideUp 0.3s ease forwards;
 }
 
 /* 7. الهيدر (تأثير الزجاج) */
 header {
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 header .flex-col {
-    /* التأكد من أن النصوص تبدأ من جهة اليمين تماماً */
-    align-items: flex-end; 
+  /* التأكد من أن النصوص تبدأ من جهة اليمين تماماً */
+  align-items: flex-end;
 }
 
 /* تحسين شكل الخط للجملة الوصفية */
 header p {
-    letter-spacing: -0.2px;
-    word-spacing: 1px;
+  letter-spacing: -0.2px;
+  word-spacing: 1px;
 }
 
 /* في الشاشات الصغيرة جداً، نصغر الجملة أكثر */
 @media (max-width: 400px) {
-    header p {
-        font-size: 8px;
-    }
+  header p {
+    font-size: 8px;
+  }
 }
 #categoryBar {
-    display: flex;
-    overflow-x: auto;
-    white-space: nowrap;
-    gap: 12px;
-    padding: 20px 15px;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    cursor: grab;
-    user-select: none;
+  display: flex;
+  overflow-x: auto;
+  white-space: nowrap;
+  gap: 12px;
+  padding: 20px 15px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  cursor: grab;
+  user-select: none;
 }
 
 #categoryBar::-webkit-scrollbar {
-    display: none;
+  display: none;
 }
 
 .category-btn {
-    display: flex;
-    align-items: center;
-    gap: 8px; /* مسافة بين الأيقونة والنص */
-    padding: 12px 24px;
-    border-radius: 40px; /* شكل بيضاوي (Pill) */
-    font-weight: 800;
-    font-size: 15px;
-    border: none;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05); /* ظل خفيف */
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    background-color: #f3f4f6; /* لون خلفية افتراضي رمادي فاتح */
-    color: #9ca3af; /* لون نص افتراضي رمادي */
-    text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 8px; /* مسافة بين الأيقونة والنص */
+  padding: 12px 24px;
+  border-radius: 40px; /* شكل بيضاوي (Pill) */
+  font-weight: 800;
+  font-size: 15px;
+  border: none;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); /* ظل خفيف */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background-color: #f3f4f6; /* لون خلفية افتراضي رمادي فاتح */
+  color: #9ca3af; /* لون نص افتراضي رمادي */
+  text-transform: uppercase;
 }
 
 /* التنسيق عند اختيار القسم (اللون الأخضر مثل الصورة) */
 .category-btn.active {
-    background-color: #3d7e52 !important; /* لون أخضر داكن مثل الصورة */
-    color: white !important;
-    box-shadow: 0 8px 20px rgba(61, 126, 82, 0.3);
-    transform: translateY(-2px); /* رفعة بسيطة للزر المختار */
+  background-color: #3d7e52 !important; /* لون أخضر داكن مثل الصورة */
+  color: white !important;
+  box-shadow: 0 8px 20px rgba(61, 126, 82, 0.3);
+  transform: translateY(-2px); /* رفعة بسيطة للزر المختار */
 }
 
 .sticky-container {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    
-    /* جعل الخلفية بيضاء شفافة بنسبة 80% */
-    background-color: rgba(255, 255, 255, 0.8); 
-    
-    /* تأثير البلور (الزجاجي) */
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px); /* لدعم متصفح سفاري وايفون */
-    
-    /* حدود بسيطة من الأسفل لتمييز الحاوية */
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-    
-    /* لتحسين الأداء ومنع الارتجاج أثناء التمرير */
-    transition: background-color 0.3s ease;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+
+  /* جعل الخلفية بيضاء شفافة بنسبة 80% */
+  background-color: rgba(255, 255, 255, 0.8);
+
+  /* تأثير البلور (الزجاجي) */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px); /* لدعم متصفح سفاري وايفون */
+
+  /* حدود بسيطة من الأسفل لتمييز الحاوية */
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+
+  /* لتحسين الأداء ومنع الارتجاج أثناء التمرير */
+  transition: background-color 0.3s ease;
 }
 
 /* تأكدي من إزالة أي خلفيات صلبة من الهيدر وشريط التصنيفات بالداخل */
-header, .category-wrapper {
-    background-color: transparent !important;
+header,
+.category-wrapper {
+  background-color: transparent !important;
 }
 .category-wrapper {
-    border-top: 1px solid #f3f4f6; /* فاصل بسيط بين الهيدر والأزرار */
-    width: 100%;
+  border-top: 1px solid #f3f4f6; /* فاصل بسيط بين الهيدر والأزرار */
+  width: 100%;
 }
 
 @keyframes gentle-grow {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.05); opacity: 0.8; }
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
 }
 
 .animate-gentle-grow {
@@ -296,16 +319,120 @@ header, .category-wrapper {
 }
 
 
+/* Chrome, Safari, Edge, Opera */
+#userSellPrice::-webkit-outer-spin-button,
+#userSellPrice::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
 
+/* Firefox */
+#userSellPrice[type="number"] {
+  -moz-appearance: textfield;
+}
+/* حل مشكلة حركة الدائرة */
+#noShameToggle:checked + label div {
+  transform: translateX(1.5rem); /* تحريك الدائرة لليسار بمقدار 24 بكسل */
+}
 
+/* في حال كنت تستخدم RTL (الاتجاه من اليمين لليسار) */
+[dir="rtl"] #noShameToggle:checked + label div {
+  transform: translateX(
+    1.3rem
+  ); /* التحريك للجهة المقابلة إذا كان التصميم معكوساً */
+}
 
+/* إخفاء الأسعار عند التفعيل */
+body.no-shame-active .sale,
+body.no-shame-active .animate-gentle-grow {
+  display: none !important;
+}
 
+/* تحسين شكل النتائج لتكون ملفتة للمندوب */
+#profitResult .result-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-radius: 1rem;
+    margin-bottom: 0.75rem;
+}
 
+#profitBeforeOffer, #profitAfterOffer {
+    font-size: 1.25rem;
+    font-weight: 900;
+    letter-spacing: 0.5px;
+}
 
+/* تحريك بسيط عند ظهور النتائج */
+.animate-slide-up {
+    animation: slideUp 0.3s ease-out;
+}
 
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+/* ستايل الليبل العام */
+/* الليبل الأساسي */
+.product-badge {
+    position: absolute;
+    right: 0;
+    padding: 5px 14px;
+    font-size: 11px;
+    font-weight: 800;
+    color: white;
+    z-index: 30;
+    border-radius: 10px 0 0 30px;
+    box-shadow: -2px 2px 5px rgba(0,0,0,0.15);
+    white-space: nowrap;
+}
+.badge-green { background-color: #27ae60; color: white; }
+.badge-yellow { background-color: #f1c40f; color: #000; } /* الأصفر عادة يفضل نص أسود لوضوحه */
+.badge-red { background-color: #e74c3c; color: white; }
+.badge-orange { background-color: #e67e22; color: white; }
 
+/* لجعل الكارت "نسبياً" ليظهر الليبل فوقه */
+.image-container {
+    position: relative;
+}
+/* التعديلات تعمل فقط على الشاشات الصغيرة (الجوال) */
+@media (max-width: 768px) {
+    /* الحاوية التي تجمع البحث والسلة والتبديل */
+    header, .header-container { 
+        display: flex !important;
+        flex-direction: row-reverse !important; /* لترتيب العناصر بشكل صحيح */
+        align-items: center !important;
+        justify-content: space-between !important;
+        padding: 10px 8px !important;
+        gap: 8px !important;
+    }
 
+    /* تصغير شريط البحث لإعطاء مساحة */
+    #searchInputContainer, .search-box {
+        flex: 0 0 50% !important; /* يأخذ نصف الشاشة فقط */
+        max-width: 50% !important;
+    }
 
+    /* حاوية الأيقونات (السلة + التوغل) */
+    .cart-toggle-container, .nav-icons {
+        flex: 1 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        gap: 15px !important; /* مسافة مريحة للنقر بين السلة والزر */
+    }
 
-
-
+    /* تكبير زر السلة لتسهيل الاستخدام */
+    #cartBtn {
+        padding: 10px !important;
+        min-width: 44px !important;
+        min-height: 44px !important;
+    }
+    
+    /* تكبير زر الوضع الليلي/الإخفاء قليلًا */
+    #noShameToggle + div {
+        transform: scale(1.2); /* تكبير الزر بنسبة 20% للنقر الأسهل */
+        margin-left: 5px;
+    }
+}
