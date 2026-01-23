@@ -1,7 +1,7 @@
 
 // 1. الإعدادات والمتغيرات العالمية
 const SHEET_URL =
-  "https://docs.google.com/spreadsheets/d/e/2PACX-1vQLyL8folfxpC5EsPlkv2vWBNROY064cbM3tbJ0bArIfJTWe3Fi1KB0SLMLiE8PLto32lGrT6Gzcr56/pub?output=csv";
+    "https://docs.google.com/spreadsheets/d/e/2PACX-1vQLyL8folfxpC5EsPlkv2vWBNROY064cbM3tbJ0bArIfJTWe3Fi1KB0SLMLiE8PLto32lGrT6Gzcr56/pub?output=csv";
 
 let allProducts = [];
 let filteredProducts = [];
@@ -11,9 +11,9 @@ let currentCategory = "الكل";
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
 // 2. التحميل الأولي عند فتح الصفحة
-window.onload = function() {
+window.onload = function () {
     loadDataFromSheet();
-    
+
     // استرجاع حالة "وضع الزبون" من الذاكرة وتطبيقها
     const savedStatus = localStorage.getItem("noShameStatus");
     const toggleInput = document.getElementById("noShameToggle");
@@ -629,11 +629,19 @@ function startProfitCalc(productIndex) {
         const pBefore = (sellPrice * pieces) - mainPrice;
         const pAfter = (sellPrice * pieces) - offerPrice;
 
-        // عرض النتائج
         document.getElementById('profitBeforeOffer').innerText = Math.round(pBefore).toLocaleString() + " د.ع";
         document.getElementById('profitAfterOffer').innerText = Math.round(pAfter).toLocaleString() + " د.ع";
 
-        // إظهار النتائج وإخفاء زر الحساب الأصلي حسب مخطط التدفق
+        // --- التعديل هنا لضمان الإخفاء الذكي ---
+        // نبحث عن الحاوية (السطر) التي تحتوي على "الربح بعد العرض"
+        const afterOfferRow = document.getElementById('profitAfterOffer').closest('div');
+
+        // نعطي هذا السطر كلاس خاص لكي يتحكم به الـ CSS
+        if (afterOfferRow) {
+            afterOfferRow.classList.add('profit-after-offer-row');
+        }
+
+        // إظهار النتائج
         resultDiv.classList.remove('hidden');
         calcActionButtons.classList.add('hidden');
     };
@@ -661,12 +669,19 @@ function closeProfitModal() {
 function applyNoShameMode() {
     const isChecked = document.getElementById('noShameToggle').checked;
     const body = document.body;
+    const profitLabel = document.getElementById('profitLabel');
 
     if (isChecked) {
         body.classList.add('no-shame-active');
         localStorage.setItem('noShameStatus', 'enabled');
+        
+        // تغيير النص عند تفعيل وضع الزبون
+        if (profitLabel) profitLabel.innerText = "ربح الكرتون:";
     } else {
         body.classList.remove('no-shame-active');
         localStorage.setItem('noShameStatus', 'disabled');
+        
+        // إعادة النص الأصلي عند إيقاف الوضع
+        if (profitLabel) profitLabel.innerText = "ربح الكرتون | قبل العرض:";
     }
 }

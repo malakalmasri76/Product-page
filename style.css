@@ -342,7 +342,14 @@ header,
     1.3rem
   ); /* التحريك للجهة المقابلة إذا كان التصميم معكوساً */
 }
+.profit-after-offer-row {
+    display: flex !important;
+}
 
+/* 2. السطر يختفي "فقط" عندما يكون وضع عدم الإحراج مفعلاً */
+body.no-shame-active .profit-after-offer-row {
+    display: none !important;
+}
 /* إخفاء الأسعار عند التفعيل */
 body.no-shame-active .sale,
 body.no-shame-active .animate-gentle-grow {
