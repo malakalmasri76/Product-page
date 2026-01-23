@@ -41,34 +41,51 @@
 
 <body class="bg-slate-50">
     <div class="sticky-container">
-        <header class="shadow-sm">
-            <div class="container mx-auto px-4 py-3 flex items-center justify-between gap-4">
-                <div class="flex flex-col items-end text-right">
-                    <div class="flex items-center gap-2">
-                        <img src="https://i.ibb.co/F4gw7BnV/logo.png" alt="Logo" class="h-8 md:h-10">
-                        <h1 class="text-xl md:text-2xl font-black text-slate-800 tracking-tighter">سلة العراق</h1>
-                    </div>
+        <header class="header-container shadow-sm sticky top-0 z-50 bg-white/90 backdrop-blur-md">
+    <div class="container mx-auto px-4 py-3 flex items-center justify-between gap-2 md:gap-4">
 
-                    <p class="text-[10px] md:text-xs text-slate-500 font-medium mt-1 leading-none opacity-80">
-                        لتجارة وتوزيع المنتجات الغذائية والاستهلاكية
-                    </p>
-                </div>
+        <div class="flex flex-col items-end text-right min-w-fit">
+            <div class="flex items-center gap-2">
+                <img src="https://i.ibb.co/F4gw7BnV/logo.png" alt="Logo" class="h-8 md:h-10">
+                <h1 class="hidden md:block text-lg md:text-2xl font-black text-slate-800 tracking-tighter">سلة العراق</h1>
+            </div>
+            <p class="hidden md:block text-[10px] text-slate-500 font-medium mt-1 leading-none opacity-80">
+                لتجارة وتوزيع المنتجات الغذائية والاستهلاكية
+            </p>
+        </div>
 
-                <div class="relative cursor-pointer order-last" onclick="toggleCart()">
-                    <span class="material-icons-outlined text-3xl text-slate-700">shopping_cart</span>
-                    <span id="cartCount"
-                        class="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full font-bold">0</span>
-                </div>
+        <div class="relative flex-grow max-w-[140px] sm:max-w-md transition-all duration-300">
+            <input type="text" id="searchInput" onkeyup="filterProducts()" placeholder="بحث..."
+                class="w-full py-2 pr-9 pl-4 bg-gray-100 border-none focus:ring-2 focus:ring-yellow-400 rounded-full text-sm h-10">
+            <span class="absolute inset-y-0 right-3 flex items-center text-gray-400">
+                <span class="material-icons-outlined text-sm">search</span>
+            </span>
+        </div>
 
-                <div class="relative flex-grow max-w-md">
-                    <input type="text" id="searchInput" onkeyup="filterProducts()" placeholder="ابحث عن منتج..."
-                        class="w-full py-2 pr-10 pl-4 bg-gray-50 border-none focus:ring-2 focus:ring-yellow-400 rounded-full text-sm">
-                    <span class="absolute inset-y-0 right-3 flex items-center text-gray-400">
-                        <span class="material-icons-outlined">search</span>
-                    </span>
+        <div class="flex items-center gap-3 md:gap-5 min-w-fit">
+            
+            <div class="flex flex-col items-center justify-center px-1">
+                <div class="relative scale-110 md:scale-100"> <input type="checkbox" id="noShameToggle" class="sr-only peer" onchange="applyNoShameMode()">
+                    <label for="noShameToggle"
+                        class="block w-11 h-6 bg-slate-200 rounded-full cursor-pointer transition-all duration-300 peer-checked:bg-blue-600 relative">
+                        <div id="dot"
+                            class="absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-all duration-300 shadow-sm flex items-center justify-center">
+                        </div>
+                    </label>
                 </div>
             </div>
-        </header>
+
+            <div class="relative cursor-pointer p-1 active:scale-90 transition-transform" onclick="toggleCart()">
+                <span class="material-icons-outlined text-3xl text-slate-700">shopping_cart</span>
+                <span id="cartCount"
+                    class="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full font-bold shadow-sm border-2 border-white">0</span>
+            </div>
+            
+        </div>
+
+    </div>
+</header>
+
         <div class="category-wrapper">
             <div id="categoryBar" class="max-w-screen-xl mx-auto">
             </div>
@@ -108,7 +125,8 @@
     </div>
 
     <main>
-        <div id="productsGrid" class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-screen-xl mx-auto px-4 py-10">
+        <div id="productsGrid"
+            class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-screen-xl mx-auto px-4 py-10">
             <div class="col-span-full text-center py-10 text-slate-500">جاري تحميل المنتجات...</div>
         </div>
     </main>
@@ -195,11 +213,52 @@
             <div id="modalBody"></div>
         </div>
     </div>
+    <div id="profitModal" class="fixed inset-0 z-[2000] hidden flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+    <div id="profitContent" class="bg-white w-full max-w-md rounded-[32px] p-8 shadow-2xl transform transition-all scale-95 opacity-0">
+        <h2 class="text-2xl font-black text-slate-800 mb-6 flex items-center gap-3">
+            <span class="material-icons-outlined text-green-600">analytics</span>
+            حاسبة الأرباح
+        </h2>
+
+        <div class="space-y-6">
+            <div>
+                <label class="block text-sm font-bold text-slate-600 mb-2 mr-1">سعر بيع القطعة (السعر المتوقع)</label>
+                <div class="relative">
+                    <input type="number" id="userSellPrice" 
+                        class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-green-500 focus:ring-0 text-lg font-bold transition-all"
+                        placeholder="0">
+                    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold">د.ع</span>
+                </div>
+            </div>
+
+            <div id="calcActionButtons" class="flex gap-3">
+                <button onclick="closeProfitModal()" class="flex-1 py-4 bg-slate-100 text-slate-600 rounded-2xl font-bold hover:bg-slate-200 transition-all">إلغاء</button>
+                <button id="calcBtn" class="flex-[2] py-4 bg-green-600 text-white rounded-2xl font-bold shadow-lg shadow-green-200 hover:bg-green-700 transition-all">احسب الآن</button>
+            </div>
+
+            <div id="profitResult" class="hidden space-y-4 animate-in fade-in zoom-in duration-300">
+                <div class="p-4 bg-blue-50 rounded-2xl border border-blue-100 flex justify-between items-center">
+                    <span class="text-blue-700 font-bold">ربح الكرتون | قبل العرض:</span>
+                    <span id="profitBeforeOffer" class="text-blue-900 font-black text-lg">0 د.ع</span>
+                </div>
+                <div class="p-4 bg-green-50 rounded-2xl border border-green-100 flex justify-between items-center">
+                    <span class="text-green-700 font-bold">ربح الكرتون | مع العرض:</span>
+                    <span id="profitAfterOffer" class="text-green-900 font-black text-lg">0 د.ع</span>
+                </div>
+
+                <div class="flex gap-3 pt-4 border-t border-slate-100">
+                    <button id="cancelAfterCalc" onclick="closeProfitModal()" class="flex-1 py-4 border-2 border-slate-100 text-slate-500 rounded-2xl font-bold hover:bg-slate-50 transition-all">إلغاء</button>
+                    <button id="addToCartFromCalc" class="flex-[2] py-4 bg-yellow-400 text-black rounded-2xl font-bold shadow-lg shadow-yellow-100 hover:bg-yellow-500 transition-all flex items-center justify-center gap-2">
+                        <span class="material-icons-outlined">add_shopping_cart</span>
+                        إضافة إلى السلة
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <script src="script.js"></script>
-
 </body>
 
 </html>
-
-
