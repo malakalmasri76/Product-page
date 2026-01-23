@@ -1,3 +1,4 @@
+
 // 1. الإعدادات والمتغيرات العالمية
 const SHEET_URL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vQLyL8folfxpC5EsPlkv2vWBNROY064cbM3tbJ0bArIfJTWe3Fi1KB0SLMLiE8PLto32lGrT6Gzcr56/pub?output=csv";
