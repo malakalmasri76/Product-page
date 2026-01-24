@@ -17,14 +17,14 @@ window.onload = function () {
     // استرجاع حالة "وضع الزبون" من الذاكرة وتطبيقها
     const savedStatus = localStorage.getItem("noShameStatus");
     const toggleInput = document.getElementById("noShameToggle");
-    
+
     // --- التعديل هنا ---
-    const profitLabel = document.getElementById("profitLabel"); 
+    const profitLabel = document.getElementById("profitLabel");
 
     if (savedStatus === "enabled" && toggleInput) {
         toggleInput.checked = true;
         document.body.classList.add("no-shame-active");
-        
+
         // إذا كان الوضع مفعلاً، غير النص فوراً عند التحميل
         if (profitLabel) {
             profitLabel.innerText = "ربح الكرتون:";
@@ -253,7 +253,7 @@ function renderPage(page, shouldScroll = true) {
         return `
         <div class="product-card-container">
             <div class="product-card-inner" id="card-${productIndex}">
-                <div class="card-front bg-white border border-slate-100 shadow-sm rounded-3xl overflow-hidden flex flex-col">
+                <div class="card-front overflow-hidden flex flex-col">
                   ${badgeHTML}
                 <button onclick="event.stopPropagation(); document.getElementById('card-${productIndex}').classList.toggle('is-flipped')" 
                         class="absolute top-2 left-2 z-20 w-8 h-8 flex items-center justify-center">
@@ -285,10 +285,10 @@ function renderPage(page, shouldScroll = true) {
                                         <span class="material-icons-outlined text-[20px]">add_shopping_cart</span>
                                     </button>
                                 ` : `
-                                    <div class="w-30 h-10 flex items-center gap-1 bg-yellow-200 rounded-xl p-1 border border-gray-200">
-                                        <button onclick="changeQtyByName('${product["اسم المنتج"]}', 1)" class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center text-[12px] font-bold shadow-sm">+</button>
-                                        <span class="text-[12px] font-black px-1">${quantityInCart}</span>
-                                        <button onclick="changeQtyByName('${product["اسم المنتج"]}', -1)" class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center text-[12px] font-bold shadow-sm">-</button>
+                                    <div class="w-30 h-10 flex items-center gap-1 bg-white rounded-xl p-1 border border-slate-200 shadow-sm">
+                                        <button onclick="changeQtyByName('${product["اسم المنتج"]}', 1)" class="w-8 h-8 bg-slate-50 hover:bg-slate-100 rounded-lg flex items-center justify-center text-[12px] font-bold text-slate-700 transition-colors shadow-sm">+</button>
+                                        <span class="text-[12px] font-black px-1 text-slate-800 self-center">${quantityInCart}</span>
+                                        <button onclick="changeQtyByName('${product["اسم المنتج"]}', -1)" class="w-8 h-8 bg-slate-50 hover:bg-slate-100 rounded-lg flex items-center justify-center text-[12px] font-bold text-slate-700 transition-colors shadow-sm">-</button>
                                     </div>
                                 `}
                             </div>
@@ -353,10 +353,10 @@ function createCategoryButtons() {
         .map(
             (cat) => `
         <button onclick="setCategory('${cat}')" 
-            class="category-btn border transition-all 
+            class="category-btn transition-transform active:scale-95 
             ${currentCategory === cat
-                    ? "bg-yellow-400 text-white border-yellow-400 shadow-md"
-                    : "bg-yellow-50 text-slate-600 border-slate-200"
+                    ? "active text-white shadow-lg shadow-slate-300 transform scale-105"
+                    : "text-slate-500 hover:text-slate-700 hover:shadow-md"
                 }">
             ${cat}
         </button>`
@@ -415,7 +415,7 @@ function updatePaginationControls() {
     // أرقام الصفحات
     for (let i = 1; i <= totalPages; i++) {
         // نتركها كما هي (i) لأننا نريد التمرير للأعلى عند الانتقال لصفحة جديدة
-        html += `<button onclick="renderPage(${i}, true)" class="w-10 h-10 rounded-xl font-bold ${i === currentPage ? "bg-yellow-400 text-white" : "bg-white text-slate-400"
+        html += `<button onclick="renderPage(${i}, true)" class="w-10 h-10 rounded-xl font-bold transition-all ${i === currentPage ? "bg-yellow-400 text-white shadow-lg shadow-slate-300 scale-110" : "bg-white text-slate-400 hover:text-slate-800 hover:bg-slate-50 border border-slate-100"
             }">${i}</button>`;
     }
 
@@ -683,13 +683,13 @@ function applyNoShameMode() {
     if (isChecked) {
         body.classList.add('no-shame-active');
         localStorage.setItem('noShameStatus', 'enabled');
-        
+
         // تغيير النص عند تفعيل وضع الزبون
         if (profitLabel) profitLabel.innerText = "ربح الكرتون:";
     } else {
         body.classList.remove('no-shame-active');
         localStorage.setItem('noShameStatus', 'disabled');
-        
+
         // إعادة النص الأصلي عند إيقاف الوضع
         if (profitLabel) profitLabel.innerText = "ربح الكرتون | قبل العرض:";
     }
