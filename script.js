@@ -127,25 +127,44 @@ function updateCart() {
 }
 
 
-function addToCart(name, price, imageUrl) {
+function addToCart(name, price, imageUrl, index) {
     const numericPrice = parseInt(price.toString().replace(/[^\d]/g, '')) || 0;
-
     const item = cart.find((i) => i.name === name);
+
     if (item) {
         item.qty++;
     } else {
-        // تخزين الاسم والسعر والصورة
-        cart.push({
-            name: name,
-            price: numericPrice,
-            qty: 1,
-            image: imageUrl
-        });
+        cart.push({ name: name, price: numericPrice, qty: 1, image: imageUrl });
     }
-    updateCart();
-    renderPage(currentPage, false);
-}
 
+    updateCart();
+
+    // التعديل السحري: تحديث الزر في مكانه بدون عمل ريندر لكل الصفحة
+    refreshSingleButton(name, index, imageUrl, price);
+}
+function refreshSingleButton(name, index, imageUrl, price) {
+    const wrapper = document.getElementById(`btn-wrapper-${index}`);
+    if (!wrapper) return;
+
+    const cartItem = cart.find((item) => item.name === name);
+    const qty = cartItem ? cartItem.qty : 0;
+    const rawPrice = price.toString().replace(/[^\d]/g, '');
+
+    if (qty === 0) {
+        wrapper.innerHTML = `
+            <button type="button" onclick="addToCart('${name}', '${rawPrice}', '${imageUrl}', ${index})" 
+                    class="w-10 h-10 bg-yellow-400 text-white rounded-xl flex items-center justify-center transition-all active:scale-90">
+                <span class="material-icons-outlined text-[20px]">add_shopping_cart</span>
+            </button>`;
+    } else {
+        wrapper.innerHTML = `
+            <div class="w-30 h-10 flex items-center gap-1 bg-white rounded-xl p-1 border border-slate-200 shadow-sm">
+                <button type="button" onclick="changeQtyByName('${name}', 1, ${index})" class="w-8 h-8 bg-slate-50 rounded-lg flex items-center justify-center text-[12px] font-bold">+</button>
+                <span class="text-[12px] font-black px-1 text-slate-800">${qty}</span>
+                <button type="button" onclick="changeQtyByName('${name}', -1, ${index})" class="w-8 h-8 bg-slate-50 rounded-lg flex items-center justify-center text-[12px] font-bold">-</button>
+            </div>`;
+    }
+}
 // 4. وظائف الحذف والتأكيد (المودال)
 function clearFullCart() {
     const modal = document.getElementById("confirmModal");
@@ -191,14 +210,17 @@ function changeQty(index, delta) {
     renderPage(currentPage, false);
 }
 
-function changeQtyByName(name, delta) {
-    const index = cart.findIndex((item) => item.name === name);
-    if (index !== -1) {
-        cart[index].qty += delta;
-        if (cart[index].qty <= 0) cart.splice(index, 1);
+function changeQtyByName(name, delta, index) {
+    const itemIndex = cart.findIndex((item) => item.name === name);
+    if (itemIndex !== -1) {
+        cart[itemIndex].qty += delta;
+        if (cart[itemIndex].qty <= 0) cart.splice(itemIndex, 1);
     }
     updateCart();
-    renderPage(currentPage, false);
+
+    // تحديث الزر في مكانه
+    const product = allProducts.find(p => p["اسم المنتج"] === name); // لضمان جلب الصورة والسعر
+    refreshSingleButton(name, index, fixImageUrl(product["الصورة"]), product["السعر"]);
 }
 
 // 5. عرض المنتجات (UI) مع خاصية الـ Flip
@@ -277,21 +299,21 @@ function renderPage(page, shouldScroll = true) {
                             ${product["اسم المنتج"]}
                         </h3>
                     </div>
-                            
-                            <div onclick="event.stopPropagation()">
-                                ${quantityInCart === 0 ? `
-                                    <button onclick="addToCart('${product["اسم المنتج"]}', '${rawPrice}', '${productImage}')" 
-                                        class="w-10 h-10 bg-yellow-400 text-white rounded-xl flex items-center justify-center transition-all active:scale-90 ${isOutOfStock ? 'opacity-30 pointer-events-none' : ''}">
-                                        <span class="material-icons-outlined text-[20px]">add_shopping_cart</span>
-                                    </button>
-                                ` : `
-                                    <div class="w-30 h-10 flex items-center gap-1 bg-white rounded-xl p-1 border border-slate-200 shadow-sm">
-                                        <button onclick="changeQtyByName('${product["اسم المنتج"]}', 1)" class="w-8 h-8 bg-slate-50 hover:bg-slate-100 rounded-lg flex items-center justify-center text-[12px] font-bold text-slate-700 transition-colors shadow-sm">+</button>
-                                        <span class="text-[12px] font-black px-1 text-slate-800 self-center">${quantityInCart}</span>
-                                        <button onclick="changeQtyByName('${product["اسم المنتج"]}', -1)" class="w-8 h-8 bg-slate-50 hover:bg-slate-100 rounded-lg flex items-center justify-center text-[12px] font-bold text-slate-700 transition-colors shadow-sm">-</button>
-                                    </div>
-                                `}
-                            </div>
+                        
+<div id="btn-wrapper-${productIndex}" onclick="event.stopPropagation()">
+    ${quantityInCart === 0 ? `
+        <button type="button" onclick="addToCart('${product["اسم المنتج"]}', '${rawPrice}', '${productImage}', ${productIndex})" 
+                class="w-10 h-10 bg-yellow-400 text-white rounded-xl flex items-center justify-center transition-all active:scale-90">
+            <span class="material-icons-outlined text-[20px]">add_shopping_cart</span>
+        </button>
+    ` : `
+        <div class="w-30 h-10 flex items-center gap-1 bg-white rounded-xl p-1 border border-slate-200 shadow-sm">
+            <button type="button" onclick="changeQtyByName('${product["اسم المنتج"]}', 1, ${productIndex})" class="w-8 h-8 bg-slate-50 hover:bg-slate-100 rounded-lg flex items-center justify-center text-[12px] font-bold">+</button>
+            <span class="text-[12px] font-black px-1 text-slate-800">${quantityInCart}</span>
+            <button type="button" onclick="changeQtyByName('${product["اسم المنتج"]}', -1, ${productIndex})" class="w-8 h-8 bg-slate-50 hover:bg-slate-100 rounded-lg flex items-center justify-center text-[12px] font-bold">-</button>
+        </div>
+    `}
+</div>
                         </div>
                         
                         <div class="mt-auto space-y-1 text-[13px]">
@@ -670,7 +692,7 @@ function applyNoShameMode() {
         if (profitLabel) profitLabel.innerText = "ربح الكرتون | قبل العرض:";
     }
 }
-window.addEventListener('scroll', function() {
+window.addEventListener('scroll', function () {
     const btn = document.getElementById("backToTop");
     if (window.scrollY > 300) {
         btn.classList.remove("opacity-0", "invisible");
@@ -681,6 +703,6 @@ window.addEventListener('scroll', function() {
     }
 });
 
-document.getElementById("backToTop").onclick = function() {
+document.getElementById("backToTop").onclick = function () {
     window.scrollTo({ top: 0, behavior: "smooth" });
 };
