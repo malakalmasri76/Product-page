@@ -670,19 +670,17 @@ function applyNoShameMode() {
         if (profitLabel) profitLabel.innerText = "ربح الكرتون | قبل العرض:";
     }
 }
-// إظهار وإخفاء زر العودة للأعلى عند التمرير
-window.onscroll = function() {
+window.addEventListener('scroll', function() {
     const btn = document.getElementById("backToTop");
-    if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+    if (window.scrollY > 300) {
         btn.classList.remove("opacity-0", "invisible");
         btn.classList.add("opacity-100", "visible");
     } else {
         btn.classList.add("opacity-0", "invisible");
         btn.classList.remove("opacity-100", "visible");
     }
-};
+});
 
-// وظيفة الزر عند الضغط
 document.getElementById("backToTop").onclick = function() {
     window.scrollTo({ top: 0, behavior: "smooth" });
 };

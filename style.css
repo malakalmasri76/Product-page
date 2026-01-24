@@ -493,5 +493,11 @@ body.no-shame-active .animate-gentle-grow {
     display: none !important;
 }
 #backToTop {
-    box-shadow: 0 10px 25px -5px rgba(234, 179, 8, 0.4);
+    /* تجنب الظلال الثقيلة ليبقى شفافاً وهادئاً */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+/* في وضع الزبون، قد تود إبقاء الزر شفافاً أيضاً أو تغيير لونه قليلاً */
+.no-shame-active #backToTop {
+    border-color: rgba(0, 0, 0, 0.1);
 }
