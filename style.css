@@ -489,3 +489,9 @@ body.no-shame-active .animate-gentle-grow {
         margin-left: 5px;
     }
 }
+#paginationButtons {
+    display: none !important;
+}
+#backToTop {
+    box-shadow: 0 10px 25px -5px rgba(234, 179, 8, 0.4);
+}

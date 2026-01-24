@@ -6,7 +6,7 @@ const SHEET_URL =
 let allProducts = [];
 let filteredProducts = [];
 let currentPage = 1;
-const itemsPerPage = 12;
+const itemsPerPage = 999;
 let currentCategory = "الكل";
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
@@ -264,7 +264,7 @@ function renderPage(page, shouldScroll = true) {
                         
                         <div class="image-bg-blur" style="background-image: url('${productImage}')"></div>
                       
-                        <img src="${productImage}" class="main-product-img ${imgStatusClass}">
+                        <img src="${productImage}" class="main-product-img ${imgStatusClass}" loading="lazy">
                         
                         ${isOutOfStock ? `<div class="out-of-stock-badge">نفذت الكمية</div>` : ""}
                     </div>
@@ -399,33 +399,9 @@ function toggleCart() {
 
 function updatePaginationControls() {
     const container = document.getElementById("paginationButtons");
-    const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
-
-    if (!container || totalPages <= 1) {
-        if (container) container.innerHTML = "";
-        return;
+    if (container) {
+        container.innerHTML = ""; // مسح الأزرار تماماً
     }
-
-    // زر الصفحة السابقة
-    let html = `<button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? "disabled" : ""
-        } class="p-2 rounded-xl border bg-white disabled:opacity-30">
-        <span class="material-icons-outlined">chevron_right</span>
-    </button>`;
-
-    // أرقام الصفحات
-    for (let i = 1; i <= totalPages; i++) {
-        // نتركها كما هي (i) لأننا نريد التمرير للأعلى عند الانتقال لصفحة جديدة
-        html += `<button onclick="renderPage(${i}, true)" class="w-10 h-10 rounded-xl font-bold transition-all ${i === currentPage ? "bg-yellow-400 text-white shadow-lg shadow-slate-300 scale-110" : "bg-white text-slate-400 hover:text-slate-800 hover:bg-slate-50 border border-slate-100"
-            }">${i}</button>`;
-    }
-
-    // زر الصفحة التالية
-    html += `<button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? "disabled" : ""
-        } class="p-2 rounded-xl border bg-white disabled:opacity-30">
-        <span class="material-icons-outlined">chevron_left</span>
-    </button>`;
-
-    container.innerHTML = html;
 }
 
 function changePage(newPage) {
@@ -694,3 +670,19 @@ function applyNoShameMode() {
         if (profitLabel) profitLabel.innerText = "ربح الكرتون | قبل العرض:";
     }
 }
+// إظهار وإخفاء زر العودة للأعلى عند التمرير
+window.onscroll = function() {
+    const btn = document.getElementById("backToTop");
+    if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+        btn.classList.remove("opacity-0", "invisible");
+        btn.classList.add("opacity-100", "visible");
+    } else {
+        btn.classList.add("opacity-0", "invisible");
+        btn.classList.remove("opacity-100", "visible");
+    }
+};
+
+// وظيفة الزر عند الضغط
+document.getElementById("backToTop").onclick = function() {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+};
