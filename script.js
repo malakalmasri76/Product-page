@@ -433,16 +433,29 @@ function changePage(newPage) {
         window.scrollTo({ top: 0, behavior: "smooth" });
     }
 }
-
 function fixImageUrl(url) {
-    if (!url) return "https://via.placeholder.com/300?text=No+Image";
-    let u = url.trim();
-    if (u.includes("drive.google.com")) {
-        let id = u.split("/d/")[1]?.split("/")[0] || u.split("id=")[1];
-        return `https://drive.google.com/uc?export=view&id=${id}`;
+    if (!url || url.toString().trim() === "") 
+        return "https://placehold.co/300x300?text=لا+توجد+صورة";
+
+    let u = url.toString().trim();
+
+    // إصلاح الروابط المعكوسة (RTL bug من Google Sheets)
+    // مثال: jpg-4861.IMG/nwQCQpt/co.ibb.i://https ← معكوس
+    if (!u.startsWith("http")) {
+        u = u.split("").reverse().join("");
     }
+
+    // تنظيف أي مسافات أو أحرف غريبة بعد العكس
+    u = u.trim();
+
+    // التحقق النهائي
+    if (!u.startsWith("http")) {
+        return "https://placehold.co/300x300?text=رابط+خاطئ";
+    }
+
     return u;
 }
+
 if ("serviceWorker" in navigator) {
     navigator.serviceWorker
         .register("./sw.js")
